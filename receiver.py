@@ -8,6 +8,7 @@ import ctypes
 import threading
 import time
 
+# testing
 maptypes = {
   'I': 'Q', # Always included, the interval or UTC of the data (defines ID)
   'a': 'I',

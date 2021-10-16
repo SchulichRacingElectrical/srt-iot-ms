@@ -1,3 +1,6 @@
+# Copyright Schulich Racing FSAE
+# Written By Justin Tijunelis
+
 from main import app
 
 class Flash:
