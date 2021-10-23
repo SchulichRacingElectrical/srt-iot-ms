@@ -1,5 +1,5 @@
 // Copyright Schulich Racing FSAE
-// Written by Justin Tijunelis
+// Written by Justin Tijunelis, Jonathan Mulyk
 #ifndef SENDER
 #define SENDER
 
@@ -12,6 +12,10 @@ typedef struct UDPServerInfo
     socklen_t serverlen;
 } UDPSInfo;
 
-void sendStruct(struct Sample sample, const int port, char *ip);
+//functions 
+UDPClient(UDPServerInfo *serverInfo, int port, char *IP);
+int sendData(UDPServerInfo *serverInfo, char *buffer, int buffSize);
+int recvData(UDPServerInfo *serverInfo, char *buffer, int buffSize);
+void sendStruct(struct Sample *sample, const int serverPort, char *serverIP);
 
 #endif
