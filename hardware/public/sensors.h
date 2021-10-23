@@ -1,5 +1,7 @@
 // Copyright Schulich Racing FSAE
 // Written by Justin Tijunelis
+#ifndef SENSORS
+#define SENSORS
 
 #pragma once
 
@@ -37,3 +39,5 @@ void remove_sensor(unsigned char id);
 *
 */
 void update_sensor(struct Sensor sensor);
+
+#endif

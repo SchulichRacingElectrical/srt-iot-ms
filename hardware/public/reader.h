@@ -1,5 +1,7 @@
 // Copyright Schulich Racing FSAE
 // Written by Justin Tijunelis
+#ifndef READER
+#define READER
 
 #pragma once
 
@@ -13,3 +15,5 @@ struct Sample {
 *
 */
 struct Sample *read_CAN_data(int timestamp);
+
+#endif

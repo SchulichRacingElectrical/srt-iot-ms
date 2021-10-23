@@ -3,7 +3,17 @@
 
 #include "../public/reader.h"
 
+
+
+
+
 struct Sample *read_CAN_data(int timestamp) {
+
+  //create a sample structure
+  struct Sample test;
+  test.length = 12;
+
+
   // Get the sensor data (should it be passed in?)
   // Based the sensor list and the timestamp, 
   // take modulus to determine which sensor to read
