@@ -3,6 +3,8 @@
 
 #pragma once
 
+// Store the most recent data for each sensor. 
+
 struct Sensor {
   unsigned char *name;
   unsigned char id;
