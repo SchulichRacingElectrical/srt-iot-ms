@@ -1,5 +1,7 @@
 // Copyright Schulich Racing FSAE
 // Written by Justin Tijunelis
+#ifndef SENSORS
+#define SENSORS
 
 #pragma once
 
@@ -21,7 +23,8 @@ struct Sensors {
 };
 
 // Could use static?
-struct Sensors *sensor_data = 0;
+//TODO commenting out for now because the compiler complained about multiple definitions of sesnor_data
+//struct Sensors *sensor_data = 0;
 
 /*
 *
@@ -37,3 +40,5 @@ void remove_sensor(unsigned char id);
 *
 */
 void update_sensor(struct Sensor sensor);
+
+#endif
