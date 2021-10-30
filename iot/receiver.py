@@ -18,7 +18,7 @@ class Receiver:
     self.received_data = False
     self.parser = Parser()
 
-  def start_receiver(self, port):
+  def start_receiver(self, port) -> None:
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
       soc.bind(('', port))
@@ -28,7 +28,7 @@ class Receiver:
     packet_resetter.start()
     self.__read_data(soc)
 
-  def __read_data(self, sock):
+  def __read_data(self, sock) -> None:
     while True:
       message, _ = sock.recvfrom(4096)
       self.received_data = True
@@ -36,7 +36,7 @@ class Receiver:
       # TODO: Handle the data
       self.relay.send_data()
 
-  def __handle_disconnect(self):
+  def __handle_disconnect(self) -> None:
     while True:
       time.sleep(1)
       current_time = int(round(time.time() * 1000))
