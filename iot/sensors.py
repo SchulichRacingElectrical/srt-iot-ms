@@ -5,5 +5,8 @@ class Sensors:
   def __init__(self):
     pass
 
-  def get_sensors(self):
+  def fetch_sensors(self):
+    pass
+
+  def get_sensors(self, sensor_ids):
     pass
