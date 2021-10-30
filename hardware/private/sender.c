@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
 
 #define TIMEOUT_SECONDS         3
@@ -31,7 +32,7 @@ void UDPClient(UDPServerInfo *serverInfo, int port, char *IP)
     //server structure elements
     memset((char *) &server, 0, sizeof(server));
     server.sin_family = AF_INET;
-    server.sin_port = htons(port)
+    server.sin_port = htons(port);
 
     //IP
     if(inet_pton(AF_INET, IP, &server.sin_addr) == 0)
@@ -68,7 +69,7 @@ int sendData(UDPServerInfo *serverInfo, char *buffer, int buffSize)
 		return -1;
 	}
 
-    return sentBytes
+    return sentBytes;
 }
 
 //receive data from UDP server
@@ -78,7 +79,7 @@ int recvData(UDPServerInfo *serverInfo, char *buffer, int buffSize)
 {
     int recBytes = -1;
 	//receive the response from the micro-service
-	recBytes = recvfrom(serverInfo->sockfd, buffer, buffSize, MSG_CONFIRM, (const struct sockaddr *) &serverInfo->server, serverInfo->serverLen);
+	recBytes = recvfrom(serverInfo->sockfd, buffer, buffSize, MSG_CONFIRM, (struct sockaddr *) &serverInfo->server, &serverInfo->serverLen);
     if(recBytes <= 0)
     {
         printf("recvfrom function failed in %s", __FILE__);
@@ -91,10 +92,9 @@ int recvData(UDPServerInfo *serverInfo, char *buffer, int buffSize)
 }
 
 //might have to change parameters when the actual implementation is added
-void sendStruct(struct Sample *sample, const int serverPort, char *serverIP){
+void sendStruct(struct Sample *sample, int serverPort, char *serverIP){
 
     char buffer[MAX_BUFF_SIZE];
-    int sockfd;
     UDPServerInfo serverInfo;
 
     #if 0//[ Test information for the sample structure
@@ -104,17 +104,17 @@ void sendStruct(struct Sample *sample, const int serverPort, char *serverIP){
 
     #endif//]
 
-    sockfd = UDPClient(&serverInfo, serverPort, serverIP)
+    UDPClient(&serverInfo, serverPort, serverIP);
 
     //clear buffer
     memset(&buffer, '\0', sizeof(buffer));
 
     //format buffer 
-    sprintf(buffer, "%s%s%s", sample->length, sample->sensor_data, sample->sensor_ids);
+    sprintf(buffer, "%d%s%s", sample->length, sample->sensor_data, sample->sensor_ids);
 
     //send the buffer to the UDP server
     sendData(&serverInfo, buffer, strlen(buffer));
 
 
-    close(sockfd);
+    close(serverInfo.sockfd);
 }

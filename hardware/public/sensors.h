@@ -23,7 +23,8 @@ struct Sensors {
 };
 
 // Could use static?
-struct Sensors *sensor_data = 0;
+//TODO commenting out for now because the compiler complained about multiple definitions of sesnor_data
+//struct Sensors *sensor_data = 0;
 
 /*
 *

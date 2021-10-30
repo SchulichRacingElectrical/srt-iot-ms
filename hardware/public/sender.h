@@ -5,17 +5,22 @@
 
 #pragma once
 
+#include "../public/reader.h"
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
+//typedef struct UDPServerInfo
 typedef struct UDPServerInfo
 {
     int sockfd;
     struct sockaddr_in server;
-    socklen_t serverlen;
-} UDPSInfo;
+    socklen_t serverLen;
+} UDPServerInfo;
 
 //functions 
-UDPClient(UDPServerInfo *serverInfo, int port, char *IP);
+void UDPClient(UDPServerInfo *serverInfo, int port, char *IP);
 int sendData(UDPServerInfo *serverInfo, char *buffer, int buffSize);
 int recvData(UDPServerInfo *serverInfo, char *buffer, int buffSize);
-void sendStruct(struct Sample *sample, const int serverPort, char *serverIP);
+void sendStruct(struct Sample *sample, int serverPort, char *serverIP);
 
 #endif
