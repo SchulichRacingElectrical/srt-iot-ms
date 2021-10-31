@@ -1,5 +1,5 @@
 # Copyright Schulich Racing FSAE
-# Written By Justin Tijunelis
+# Written By Justin Tijunelis, Camilla Abdrazakov, Jonathan Mulyk
 
 import struct
 import ctypes
@@ -24,6 +24,9 @@ sensor_types = {
   '?': 1,           # bool
 }
 
+"""
+
+"""
 class Parser:
   def __init__(self, sensors):
     self.sensors = sensors
