@@ -42,3 +42,4 @@ class Receiver:
         pass
         # There was a disconnection
         # TODO: Send a message indicating this and delete this object
+        # TODO: Need a timeout for never receiving data

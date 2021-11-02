@@ -40,7 +40,7 @@ class Parser:
     return data
 
   def get_data_format(self, sensor_ids):
-    data_format = "<"
+    data_format = ""
     running_count = 0
     for i, sensor_id in enumerate(sensor_ids):
       data_type = maptypes[sensor_id]
@@ -56,4 +56,4 @@ class Parser:
           next_data_size = sensor_types[next_data_type]
           if next_data_size > remaining_bytes_in_word:
             data_format += 'x' * remaining_bytes_in_word
-    return data_format
+    return "<" + data_format if data_format != "" else data_format
