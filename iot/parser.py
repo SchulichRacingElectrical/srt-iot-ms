@@ -31,6 +31,9 @@ class Parser:
   def __init__(self, sensors):
     self.sensors = sensors
 
+  """
+
+  """
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
     sensor_ids = list(message.decode()[1:sensor_count + 1])
@@ -39,21 +42,29 @@ class Parser:
     # TODO: Consolidate with sensors
     return data
 
+  """
+
+  """
   def get_data_format(self, sensor_ids):
     data_format = ""
     running_count = 0
     for i, sensor_id in enumerate(sensor_ids):
-      data_type = maptypes[sensor_id]
+      # Read the data
+      data_type = maptypes[sensor_id] # TODO: Change to read from sensors
       data_size = sensor_types[data_type]
       data_format += data_type
       running_count += data_size
+      
+      # Create padding if last sensor or next sensor exceeds padding space
       if running_count % 4 != 0:
         remaining_bytes_in_word = 4 - (running_count % 4)
         if i == len(sensor_ids) - 1:
           data_format += 'x' * remaining_bytes_in_word
+          running_count += remaining_bytes_in_word
         else:
-          next_data_type = maptypes[sensor_ids[i + 1]]
-          next_data_size = sensor_types[next_data_type]
-          if next_data_size > remaining_bytes_in_word:
+          next_type = maptypes[sensor_ids[i + 1]] # TODO: Change to read from sensors
+          next_size = sensor_types[next_type]
+          if next_size > remaining_bytes_in_word:
             data_format += 'x' * remaining_bytes_in_word
+            running_count += remaining_bytes_in_word
     return "<" + data_format if data_format != "" else data_format
