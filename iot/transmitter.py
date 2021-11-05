@@ -10,5 +10,3 @@ class Transmitter:
 
   def transmit_message(self):
     pass
-    
-    

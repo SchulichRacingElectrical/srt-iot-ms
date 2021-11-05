@@ -2,7 +2,6 @@
 # Written By Justin Tijunelis, Camilla Abdrazakov, Jonathan Mulyk
 
 import struct
-import ctypes
 
 sensor_types = {
   'q': 8,           # long long
@@ -22,7 +21,7 @@ class Parser:
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
     sensor_ids = list(message.decode()[1:sensor_count + 1])
-    data_format = get_data_format(sensor_ids)
+    data_format = self.get_data_format(sensor_ids)
     data = struct.unpack(data_format, message[sensor_count + 1:])
     data_snapshot = []
     for i, sensor_id in enumerate(sensor_ids):

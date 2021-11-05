@@ -1,10 +1,10 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from iot.main import app
-from iot.sensors import Sensors
-from iot.receiver import Receiver
-from iot.transmitter import Transmitter
+from main import app
+from sensors import Sensors
+from receiver import Receiver
+from transmitter import Transmitter
 
 class SessionCoordinator:
   def __init__(self, api_key, serial_number, hw_address):

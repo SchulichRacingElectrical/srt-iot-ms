@@ -2,17 +2,17 @@
 # Written By Justin Tijunelis
 
 from flask import request
-from iot.main import app
-from iot.session_coordinator import SessionCoordinator
-from iot.auth import require_api_key
+from main import app
+from session_coordinator import SessionCoordinator
+from auth import require_api_key
 
 class SessionDispatcher:
   def __init__(self):
     self.session_coordinators = {}
 
-  @app.route('/iot/<serial_number:serial_number>/start', methods=['POST'])
+  @app.route('/iot/<string:serial_number>/start', methods=['POST'])
   @require_api_key
-  def start_session(self, api_key, serial_number):
+  def start_session(self, key, serial_number):
     # TODO: Get API key
     new_session = SessionCoordinator(serial_number, request.remote_addr)
     self.session_coordinators[serial_number] = new_session
