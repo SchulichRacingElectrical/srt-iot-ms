@@ -11,7 +11,8 @@ maptypes = {
   'd': 'i',
   'e': 'h',
   'f': 'c',
-  'g': '?'
+  'g': '?',
+  'h': 'e'
 }
 
 sensor_types = {
@@ -20,6 +21,7 @@ sensor_types = {
   'f': 4,           # float
   'i': 4,           # integer
   'h': 2,           # short
+  'e': 2,           # short float
   'c': 1,           # char
   '?': 1,           # bool
 }
@@ -31,9 +33,6 @@ class Parser:
   def __init__(self, sensors):
     self.sensors = sensors
 
-  """
-
-  """
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
     sensor_ids = list(message.decode()[1:sensor_count + 1])
@@ -42,10 +41,8 @@ class Parser:
     # TODO: Consolidate with sensors
     return data
 
-  """
-
-  """
   def get_data_format(self, sensor_ids):
+    # TODO: Handle case where key is invalid
     data_format = ""
     running_count = 0
     for i, sensor_id in enumerate(sensor_ids):

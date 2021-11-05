@@ -12,8 +12,10 @@ def parser():
   yield parser
   del parser
 
+def test_parser_data_format_empty(parser):
+  assert parser.get_data_format("") == ""
+
 @pytest.mark.parametrize('sensor_ids, result', [
-  ("", ""),
   # Integer tests
   ("d", "<i"),
   ("dd", "<ii"),
@@ -26,7 +28,7 @@ def parser():
   ("e", "<hxx"),
   ("ee", "<hh"),
   ("eee", "<hhhxx"),
-  # Char tests
+  # Char/Bool tests
   ("f", "<cxxx"),
   ("ff", "<ccxx"),
   ("fff", "<cccx"),
@@ -37,8 +39,9 @@ def test_parser_single_data_type_format(parser, sensor_ids, result):
   assert parser.get_data_format(sensor_ids) == result
 
 @pytest.mark.parametrize('sensor_ids, result', [
-  ("abcdefg", "<qdfihc?"),
-  ("aedgcfb", "<qhxxi?xxxfcxxxd")
+  ("abcdefgh", "<qdfihc?exx"),
+  ("aedgcfb", "<qhxxi?xxxfcxxxd"),
+  ("ehfgfgcdhd", "<hec?c?fiexxi")
 ])
 def test_parser_multi_data_type_format(parser, sensor_ids, result):
   assert parser.get_data_format(sensor_ids) == result
