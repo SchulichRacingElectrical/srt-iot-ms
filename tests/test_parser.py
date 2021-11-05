@@ -24,7 +24,7 @@ def test_parser_data_format_empty(parser):
   ("b", "<d"),
   ("bb", "<dd"),
   ("bbb", "<ddd"),
-  # Short tests
+  # Short/Short Float tests
   ("e", "<hxx"),
   ("ee", "<hh"),
   ("eee", "<hhhxx"),

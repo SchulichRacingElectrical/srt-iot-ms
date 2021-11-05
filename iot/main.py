@@ -1,6 +1,9 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask
 from iot.publisher import Publisher
 from iot.session_dispatcher import SessionDispatcher

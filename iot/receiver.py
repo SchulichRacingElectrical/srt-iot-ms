@@ -16,7 +16,7 @@ class Receiver:
     self.last_packet_time = -1
     self.parser = Parser(self.sensors)
 
-  def start_receiver(self, port) -> None:
+  def start_receiver(self, port):
     soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
       soc.bind(('', port))
@@ -26,14 +26,14 @@ class Receiver:
     packet_resetter.start()
     self.__read_data(soc)
 
-  def __read_data(self, sock) -> None:
+  def __read_data(self, sock):
     while True:
       message, _ = sock.recvfrom(4096)
       self.last_packet_time = int(round(time.time() * 1000))
-      data = self.parser.parse_telemetry_message(message)
-      # TODO: Handle data
+      data_snapshot = self.parser.parse_telemetry_message(message)
+      # TODO: Send data through relay
 
-  def __handle_disconnect(self) -> None:
+  def __handle_disconnect(self):
     while True:
       time.sleep(1)
       current_time = int(round(time.time() * 1000))
