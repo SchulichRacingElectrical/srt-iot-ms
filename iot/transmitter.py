@@ -5,13 +5,10 @@
 MQTT communication with telemetry hardware. 
 """
 class Transmitter:
-  def __init__(self):
-    pass
+  def __init__(self, hw_address):
+    self.hw_address = hw_address
 
-  def transmit_dash_message(self):
-    pass
-
-  def transmit_dash_warning(self):
+  def transmit_message(self):
     pass
     
     

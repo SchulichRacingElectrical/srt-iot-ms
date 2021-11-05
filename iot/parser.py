@@ -15,9 +15,6 @@ sensor_types = {
   '?': 1,           # bool
 }
 
-"""
-
-"""
 class Parser:
   def __init__(self, sensors):
     self.sensors = sensors
@@ -27,7 +24,11 @@ class Parser:
     sensor_ids = list(message.decode()[1:sensor_count + 1])
     data_format = get_data_format(sensor_ids)
     data = struct.unpack(data_format, message[sensor_count + 1:])
-    data_snapshot = self.sensors.get_data_snapshot(data, sensor_ids)
+    data_snapshot = []
+    for i, sensor_id in enumerate(sensor_ids):
+      snapshot = {}
+      snapshot[sensor_id] = data[i]
+      data_snapshot.append(snapshot)
     return data_snapshot
 
   def get_data_format(self, sensor_ids):
