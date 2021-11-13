@@ -12,3 +12,5 @@ class Publisher:
 
   def publish_snapshot(self, api_key, snapshot):
     pass
+
+publisher = Publisher()

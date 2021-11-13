@@ -31,7 +31,6 @@ class Parser:
     return data_snapshot
 
   def get_data_format(self, sensor_ids):
-    # TODO: Handle case where key is invalid
     data_format = ""
     running_count = 0
     for i, sensor_id in enumerate(sensor_ids):

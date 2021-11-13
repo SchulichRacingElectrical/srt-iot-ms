@@ -1,10 +1,10 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from flask import request
 from main import app
-from session_coordinator import SessionCoordinator
+from flask import request
 from auth import require_api_key
+from session_coordinator import SessionCoordinator
 
 class SessionDispatcher:
   def __init__(self):
@@ -13,8 +13,7 @@ class SessionDispatcher:
   @app.route('/iot/<string:serial_number>/start', methods=['POST'])
   @require_api_key
   def start_session(self, key, serial_number):
-    # TODO: Get API key
-    new_session = SessionCoordinator(serial_number, request.remote_addr)
+    new_session = SessionCoordinator(self, key, serial_number, request.remote_addr)
     self.session_coordinators[serial_number] = new_session
     return 200 
 

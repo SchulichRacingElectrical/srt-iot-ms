@@ -10,9 +10,11 @@ from parser import Parser
 """
 UDP variable frequency data receiver from telemetry hardware. 
 """
+# TODO: Connection timeout of some sort (Timeout for idle)
 class Receiver:
-  def __init__(self, sensors):
+  def __init__(self, sensors, coordinator):
     self.sensors = sensors
+    self.coordinator = coordinator
     self.last_packet_time = -1
     self.parser = Parser(self.sensors)
 
@@ -22,6 +24,7 @@ class Receiver:
       soc.bind(('', port))
     except socket.error as msg:
       print("Bind failed. Error: " + str(sys.exc_info()))
+      self.coordinator.notify("error")
     packet_resetter = threading.Thread(target = self.__handle_disconnect)
     packet_resetter.start()
     self.__read_data(soc)
@@ -29,17 +32,16 @@ class Receiver:
   def __read_data(self, sock):
     while True:
       message, _ = sock.recvfrom(4096)
+      if self.last_packet_time == -1:
+        self.coordinator.notify("connection")
       self.last_packet_time = int(round(time.time() * 1000))
       data_snapshot = self.parser.parse_telemetry_message(message)
-      # TODO: Send data through relay
+      self.coordinator.notify("snapshot", data_snapshot)
 
   def __handle_disconnect(self):
     while True:
       time.sleep(1)
       current_time = int(round(time.time() * 1000))
       delta = current_time - self.last_packet_time 
-      if (self.last_packet_time != -1 and delta > 1000): # TODO: Have timeout for now data coming
-        pass
-        # There was a disconnection
-        # TODO: Send a message indicating this and delete this object
-        # TODO: Need a timeout for never receiving data
+      if self.last_packet_time != -1 and delta > 1000: 
+        self.coordinator.notify("disconnection")

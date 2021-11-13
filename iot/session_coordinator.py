@@ -2,23 +2,48 @@
 # Written By Justin Tijunelis
 
 from main import app
+from flask import request
 from sensors import Sensors
 from receiver import Receiver
 from transmitter import Transmitter
+from auth import require_api_key
+from publisher import publisher
 
 class SessionCoordinator:
-  def __init__(self, api_key, serial_number, hw_address):
+  def __init__(self, dispatcher, api_key, serial_number, hw_address):
+    self.dispatcher = dispatcher
+    self.api_key = api_key
     self.serial_number = serial_number
-    self.sensors = Sensors(self.api_key, self.serial_number)
-    self.receiver = Receiver(self.sensors)
-    self.transmitter = Transmitter(self.hw_address)
+    self.sensors = Sensors(api_key, serial_number)
+    self.receiver = Receiver(self.sensors, self)
+    self.transmitter = Transmitter(hw_address)
+
+  def notify(self, message, data):
+    if message == "connection":
+      # Notify through socket?
+      pass
+    elif message == "snapshot":
+      publisher.publish_snapshot(self.api_key, data)
+    elif message == "disconnection":
+      self.dispatcher.stop_session(self.serial_number)
+    elif message == "error":
+      # Notify through socket?
+      pass
 
   @app.route('/iot/{self.serial_number}/sensors', methods=['GET'])
+  @require_api_key
   def get_sensors(self, last_retrieved_time):
-    # TODO: Create the sensor diff
-    return ...  # Nothing or a list of updated sensors
+    diff = self.sensors.get_sensor_diff(last_retrieved_time)
+    return diff, 200
     
   @app.route('/iot/{self.serial_number}/message', methods=['POST'])
+  @require_api_key
   def send_message(self):
-    # Get request body
-    self.transmitter.transmit_message()
+    if request.is_json:
+      try:
+        success = self.transmitter.transmit_message(request.json['message'])
+        return 200 if success else 500
+      except:
+        return 500
+    else: 
+      return 400
