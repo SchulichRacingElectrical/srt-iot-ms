@@ -11,6 +11,7 @@ class Publisher:
     self.redis_db = redis.Redis(host=url, port=port, db=0)
 
   def publish_message(self, message, api_key, serial_number, data):
+    # TODO
     if message == "connection":
       pass
     elif message == "snapshot":

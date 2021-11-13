@@ -16,6 +16,7 @@ class Transmitter:
     self.socket.connect((self.hw_address, 80))
 
   def transmit_message(self, message):
+    # TODO
     # Do processing
     # throw exception for bad message format or other errors
     sent = self.socket.send(message)

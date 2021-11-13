@@ -30,7 +30,6 @@ class SessionCoordinator:
     return diff, 200
     
   @app.route('/iot/{self.serial_number}/message', methods=['POST'])
-  @require_api_key
   def send_message(self):
     if request.is_json:
       try:
