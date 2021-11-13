@@ -10,7 +10,14 @@ class Publisher:
     port = os.getenv('REDIS_PORT')
     self.redis_db = redis.Redis(host=url, port=port, db=0)
 
-  def publish_snapshot(self, api_key, snapshot):
-    pass
+  def publish_message(self, message, api_key, serial_number, data):
+    if message == "connection":
+      pass
+    elif message == "snapshot":
+      pass
+    elif message == "disconnection":
+      pass
+    elif message == "error":
+      pass
 
 publisher = Publisher()

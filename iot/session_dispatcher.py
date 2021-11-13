@@ -19,4 +19,3 @@ class SessionDispatcher:
 
   def stop_session(self, serial_number):
     self.session_coordinators.pop(serial_number)
-    # TODO: Make a publisher acknowledgement
