@@ -2,27 +2,14 @@
 # Written By Justin Tijunelis
 
 from flask import Flask
-from receiver import Receiver
-from sensors import Sensors
-from relay import Relay
-from transmitter import Transmitter
-
 app = Flask(__name__)
+from session_dispatcher import *
+from dotenv import load_dotenv
+load_dotenv()
 
-if __name__ == "__main__":
-  # Initialize sensor information
-  sensors = Sensors()
+if __name__ == "__main__":  
+  # Create the session dispatcher
+  dispatcher = SessionDispatcher()
 
-  # Create a relay server
-  relay = Relay(sensors=sensors)
-  
-  # Start the receiver
-  # TODO: This server should be able to handle data from multiple sources
-  receiver = Receiver(sensors=sensors, relay=relay)
-  receiver.start_receiver(4500)
-
-  # Start the transmitter (to hardware)
-  transmitter = Transmitter(sensors=sensors)
-
-  # Start the TCP server
+  # Start the HTTP server
   app.run()
