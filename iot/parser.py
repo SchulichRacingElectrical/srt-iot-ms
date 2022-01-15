@@ -9,7 +9,6 @@ sensor_types = {
   'f': 4,           # float
   'i': 4,           # integer
   'h': 2,           # short
-  'e': 2,           # short float
   'c': 1,           # char
   '?': 1,           # bool
 }
