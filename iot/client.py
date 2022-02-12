@@ -1,4 +1,5 @@
 
+from time import time
 import redis
 import json
 
@@ -22,12 +23,23 @@ while True:
 				print("We got a connection from a device with SIN: " + str(json_message["SIN"]))
 			else:
 				if json_message["error"]:
-					print("Device with SIN: " + json_message["SIN"] + " disconnected with an error.")
+					print("Device with SIN: " + str(json_message["SIN"]) + " disconnected with an error.")
 				else:
-					print("Device with SIN: " + json_message["SIN"] + " disconnected with a timeout.")
-				# Create an array of all the data
-				# Print it out
-				# Delete all data from the database for this SIN
+					print("Device with SIN: " + str(json_message["SIN"]) + " disconnected with a timeout.")
+					
+					# Create an array of all the data
+					data = json.loads(client.execute_command('JSON.GET', f'SIN_{json_message["SIN"]}'))
+					data.pop("api_key")
+					data.pop("active")
+					dataArray = list(data.values())
+					dataArray.sort(key=lambda x: x["timestamp"])
+					
+					# Print it out
+					print(dataArray)
+
+					# Delete all data from the database for this SIN
+					client.execute_command('JSON.DEL', f'SIN_{json_message["SIN"]}')
+
 		else:
 			# Data has arrived
 			# Forward the data through socket.io
