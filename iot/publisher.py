@@ -52,7 +52,7 @@ dict = {'name': 'ABC', 'Age': 25, 'profession': 'soft dev'}
 publisher = Publisher()
 publisher.publish_message("connection", 2, 1, dict)
 publisher.publish_message("snapshot", 2, 1, dict)
-publisher.publish_message("disconnection", 2, 1, dict)
+# publisher.publish_message("disconnection", 2, 1, dict)
 
 
 # SIN_1
