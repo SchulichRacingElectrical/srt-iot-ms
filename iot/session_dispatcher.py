@@ -10,6 +10,8 @@ class SessionDispatcher:
   def __init__(self):
     self.session_coordinators = {}
 
+  # http://localhost:5000/iot/1/
+
   @app.route('/iot/<string:serial_number>/start', methods=['POST'])
   @require_api_key
   def start_session(self, key, serial_number):

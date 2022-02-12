@@ -14,7 +14,22 @@ p.subscribe(env)
 
 while True:
 	message = p.get_message()
-
 	if message and not message['data'] == 1:
-		message = json.loads(message['data'].decode('utf-8'))
-		print(f'Received command: {message}')
+		json_message = json.loads(message['data'].decode('utf-8'))
+		if "active" in json_message:
+			# Either connection or disconnection
+			if json_message["active"]:
+				print("We got a connection from a device with SIN: " + str(json_message["SIN"]))
+			else:
+				if json_message["error"]:
+					print("Device with SIN: " + json_message["SIN"] + " disconnected with an error.")
+				else:
+					print("Device with SIN: " + json_message["SIN"] + " disconnected with a timeout.")
+				# Create an array of all the data
+				# Print it out
+				# Delete all data from the database for this SIN
+		else:
+			# Data has arrived
+			# Forward the data through socket.io
+			# Don't worry about this for now. 
+			print(json_message)
