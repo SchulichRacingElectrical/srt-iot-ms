@@ -20,7 +20,7 @@ class Publisher:
         self.redis_db.publish(f'SIN_{serial_number}', json.dumps({"active": True, "SIN": serial_number}))
     elif message == "snapshot":
         timestamp = data['timestamp']
-        # del data['timestamp']
+        del data['timestamp']
         self.redis_db.execute_command('JSON.SET', f'SIN_{serial_number}', timestamp, json.dumps(data))
         self.redis_db.publish(f'SIN_{serial_number}', json.dumps(data))
     elif message == "disconnection" or message == "error":

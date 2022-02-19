@@ -31,11 +31,17 @@ while True:
 					data = json.loads(client.execute_command('JSON.GET', f'SIN_{json_message["SIN"]}'))
 					data.pop("api_key")
 					data.pop("active")
-					dataArray = list(data.values())
+
+					# Flatten data
+					dataArray = []
+					for k, v in data.items():
+						updated = v
+						updated["timestamp"] = k
+						dataArray.append(updated)
 					dataArray.sort(key=lambda x: x["timestamp"])
 					
-					# Print it out
-					print(dataArray)
+					# # Print it out
+					# print(dataArray)
 
 					# Delete all data from the database for this SIN
 					client.execute_command('JSON.DEL', f'SIN_{json_message["SIN"]}')
