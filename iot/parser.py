@@ -18,6 +18,7 @@ class Parser:
     self.sensors = sensors
 
   def parse_telemetry_message(self, message):
+    # TODO: Need to parse out the timestamp. 
     sensor_count = message[0]
     sensor_ids = list(message.decode()[1:sensor_count + 1])
     data_format = self.get_data_format(sensor_ids)

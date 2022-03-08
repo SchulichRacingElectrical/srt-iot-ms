@@ -18,10 +18,13 @@ class SessionCoordinator:
     self.receiver = Receiver(self.sensors, self)
     self.transmitter = Transmitter(hw_address)
 
+  def start_receiver(self):
+    return self.receiver.start()
+
   def notify(self, message, data):
+    publisher.publish_message(message, self.api_key, self.serial_number, data)
     if message == ("disconnection" | "error"):
       self.dispatcher.stop_session(self.serial_number)
-    publisher.publish_message(message, self.api_key, self.serial_number, data)
 
   @app.route('/iot/{self.serial_number}/sensors', methods=['GET'])
   @require_api_key

@@ -7,41 +7,41 @@ import threading
 import time
 from iot.parser import Parser
 
+CONNECTION_TIMEOUT = 10.0
+MESSAGE_TIMEOUT = 3.0
+
 """
 UDP variable frequency data receiver from telemetry hardware. 
 """
-# TODO: Connection timeout of some sort (Timeout for idle)
 class Receiver:
   def __init__(self, sensors, coordinator):
     self.sensors = sensors
     self.coordinator = coordinator
-    self.last_packet_time = -1
+    self.connected = False
     self.parser = Parser(self.sensors)
 
-  def start_receiver(self, port):
-    soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  def start(self):
+    self.soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-      soc.bind(('', port))
+      self.soc.bind(('', 0))
+      self.soc.settimeout(CONNECTION_TIMEOUT)
     except socket.error as msg:
-      print("Bind failed. Error: " + str(sys.exc_info()))
       self.coordinator.notify("error")
-    packet_resetter = threading.Thread(target = self.__handle_disconnect)
-    packet_resetter.start()
-    self.__read_data(soc)
+      return -1
+    self.udp_listener = threading.Thread(target = self.__read_data)
+    self.udp_listener.start()
+    return soc.getsockname()[1]
 
-  def __read_data(self, sock):
+  def __read_data(self):
     while True:
-      message, _ = sock.recvfrom(4096)
-      if self.last_packet_time == -1:
-        self.coordinator.notify("connection")
-      self.last_packet_time = int(round(time.time() * 1000))
-      data_snapshot = self.parser.parse_telemetry_message(message)
-      self.coordinator.notify("snapshot", data_snapshot)
-
-  def __handle_disconnect(self):
-    while True:
-      time.sleep(1)
-      current_time = int(round(time.time() * 1000))
-      delta = current_time - self.last_packet_time 
-      if self.last_packet_time != -1 and delta > 1000: 
+      try:
+        message, _ = self.soc.recvfrom(4096)
+        if not self.connected:
+          self.coordinator.notify("connection")
+          self.connected = True
+          self.soc.settimeout(MESSAGE_TIMEOUT)
+        data_snapshot = self.parser.parse_telemetry_message(message)
+        self.coordinator.notify("snapshot", data_snapshot)
+      except:
         self.coordinator.notify("disconnection")
+        break
