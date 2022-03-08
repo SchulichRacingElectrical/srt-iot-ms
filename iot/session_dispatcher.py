@@ -18,10 +18,9 @@ class SessionDispatcher:
     self.session_coordinators[serial_number] = new_session
     udp_port = new_session.start_receiver()
     if udp_port > 0:
-      json_response = {"port": udp_port}
-      return json.stringify(json_response)
+      return json.stringify({"port": udp_port})
     else:
-      return 500 
+      return (500, '') # Don't think this is right
 
   def stop_session(self, serial_number):
     self.session_coordinators.pop(serial_number)

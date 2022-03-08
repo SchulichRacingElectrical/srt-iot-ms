@@ -18,11 +18,12 @@ class Parser:
     self.sensors = sensors
 
   def parse_telemetry_message(self, message):
-    # TODO: Need to parse out the timestamp. 
     sensor_count = message[0]
-    sensor_ids = list(message.decode()[1:sensor_count + 1])
+    # Double check if big or little endian
+    timestamp = int.from_bytes(message.decode()[1:sensor_count + 1], "big", signed = False)
+    sensor_ids = list(message.decode()[5:sensor_count + 1])
     data_format = self.get_data_format(sensor_ids)
-    data = struct.unpack(data_format, message[sensor_count + 1:])
+    data = struct.unpack(data_format, message[sensor_count + 5:])
     data_snapshot = []
     for i, sensor_id in enumerate(sensor_ids):
       snapshot = {}

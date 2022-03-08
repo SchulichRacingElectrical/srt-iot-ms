@@ -8,6 +8,7 @@ from iot.receiver import Receiver
 from iot.transmitter import Transmitter
 from iot.auth import require_api_key
 from iot.publisher import publisher
+import json
 
 class SessionCoordinator:
   def __init__(self, dispatcher, api_key, serial_number, hw_address):
@@ -30,7 +31,7 @@ class SessionCoordinator:
   @require_api_key
   def get_sensors(self, last_retrieved_time):
     diff = self.sensors.get_sensor_diff(last_retrieved_time)
-    return diff, 200
+    return json.stringify(diff)
     
   @app.route('/iot/{self.serial_number}/message', methods=['POST'])
   def send_message(self):
