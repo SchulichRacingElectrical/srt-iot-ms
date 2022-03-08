@@ -1,3 +1,5 @@
+# Copyright Schulich Racing FSAE
+# Written By Abod Abbas and Justin Tijunelis
 
 from time import time
 import redis

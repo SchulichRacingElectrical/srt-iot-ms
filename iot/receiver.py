@@ -5,7 +5,7 @@ import sys
 import socket
 import threading
 import time
-from parser import Parser
+from iot.parser import Parser
 
 """
 UDP variable frequency data receiver from telemetry hardware. 

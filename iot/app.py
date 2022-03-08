@@ -3,7 +3,7 @@
 
 from flask import Flask
 app = Flask(__name__)
-from session_dispatcher import *
+from iot.session_dispatcher import SessionDispatcher
 from dotenv import load_dotenv
 load_dotenv()
 

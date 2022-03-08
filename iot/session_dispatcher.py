@@ -1,10 +1,10 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from main import app
+from iot.app import app
 from flask import request
-from auth import require_api_key
-from session_coordinator import SessionCoordinator
+from iot.auth import require_api_key
+from iot.session_coordinator import SessionCoordinator
 
 class SessionDispatcher:
   def __init__(self):
