@@ -24,11 +24,9 @@ class Parser:
     sensor_ids = list(message.decode()[5:sensor_count + 1])
     data_format = self.get_data_format(sensor_ids)
     data = struct.unpack(data_format, message[sensor_count + 5:])
-    data_snapshot = []
+    data_snapshot = {"timestamp": timestamp}
     for i, sensor_id in enumerate(sensor_ids):
-      snapshot = {}
-      snapshot[sensor_id] = data[i]
-      data_snapshot.append(snapshot)
+      data_snapshot[sensor_id] = data[i]
     return data_snapshot
 
   def get_data_format(self, sensor_ids):

@@ -27,12 +27,3 @@ class Publisher:
       self.redis_db.execute_command('JSON.SET', f'SIN_{serial_number}', '.active', f'false')
       response = {"active": False, "SIN": serial_number, "error": message == "error"}
       self.redis_db.publish(f'SIN_{serial_number}', json.dumps(response))
-      
-
-publisher = Publisher()
-publisher.publish_message("connection", 2, 1, {})
-data = {'timestamp': 1, 0: 3, 1: 4, 2: 5, 3: 1000, 4: 500}
-publisher.publish_message("snapshot", 2, 1, data)
-data = {'timestamp': 0, 0: 1, 1: 2, 2: 3, 3: 4, 4: 5}
-publisher.publish_message("snapshot", 2, 1, data)
-publisher.publish_message("disconnection", 2, 1, {})
