@@ -1,5 +1,5 @@
 # Copyright Schulich Racing FSAE
-# Written By Justin Tijunelis
+# Written By Abod Abbas, Justin Tijunelis
 
 import os
 import redis
