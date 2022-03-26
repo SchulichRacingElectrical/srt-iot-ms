@@ -26,20 +26,3 @@ class SessionCoordinator:
     publisher.publish_message(message, self.api_key, self.serial_number, data)
     if message == ("disconnection" | "error"):
       self.dispatcher.stop_session(self.serial_number)
-
-  @app.route('/iot/{self.serial_number}/sensors', methods=['GET'])
-  @require_api_key
-  def get_sensors(self, last_retrieved_time):
-    diff = self.sensors.get_sensor_diff(last_retrieved_time)
-    return json.stringify(diff)
-    
-  @app.route('/iot/{self.serial_number}/message', methods=['POST'])
-  def send_message(self):
-    if request.is_json:
-      try:
-        success = self.transmitter.transmit_message(request.json['message'])
-        return 200 if success else 500
-      except:
-        return 500
-    else: 
-      return 400
