@@ -13,7 +13,7 @@ class Transmitter:
 
   def __connect(self):
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.socket.connect((self.hw_address, 80))
+    self.socket.connect((self.hw_address, 4000))
 
   def transmit_message(self, message):
     # TODO

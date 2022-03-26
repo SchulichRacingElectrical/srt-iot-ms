@@ -19,8 +19,7 @@ class Parser:
 
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
-    # Double check if big or little endian
-    timestamp = int.from_bytes(message.decode()[1:sensor_count + 1], "big", signed = False)
+    timestamp = int.from_bytes(message.decode()[1:sensor_count + 1], "big", signed = False) # Double check if big or little endian
     sensor_ids = list(message.decode()[5:sensor_count + 1])
     data_format = self.get_data_format(sensor_ids)
     data = struct.unpack(data_format, message[sensor_count + 5:])

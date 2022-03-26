@@ -9,9 +9,9 @@ class Publisher:
   def __init__(self):
     # url = os.getenv('REDIS_URL')
     # port = os.getenv('REDIS_PORT')
-    url = "redis-16146.c239.us-east-1-2.ec2.cloud.redislabs.com"
-    port = 16146
-    self.redis_db = redis.Redis(host=url, port=port, username="abod", password="Rahman252?")
+    self.url = "redis-16146.c239.us-east-1-2.ec2.cloud.redislabs.com"
+    self.port = 16146
+    self.redis_db = redis.Redis(host=self.url, port=self.port, username="abod", password="Rahman252?")
 
   def publish_message(self, message, api_key, serial_number, data):
     if message == "connection":

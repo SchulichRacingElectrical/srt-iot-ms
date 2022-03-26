@@ -9,7 +9,7 @@ load_dotenv()
 
 if __name__ == "__main__":  
   # Create the session dispatcher
-  dispatcher = SessionDispatcher()
+  dispatcher = SessionDispatcher(app)
 
   # Start the HTTP server
   app.run()

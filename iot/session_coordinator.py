@@ -7,7 +7,7 @@ from iot.sensors import Sensors
 from iot.receiver import Receiver
 from iot.transmitter import Transmitter
 from iot.auth import require_api_key
-from iot.publisher import publisher
+from iot.publisher import Publisher
 import json
 
 class SessionCoordinator:

@@ -1,8 +1,8 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from iot.app import app
-from flask import request
+from flask import request, Flask
+app = Flask(__name__) # Check this
 from iot.auth import require_api_key
 from iot.session_coordinator import SessionCoordinator
 import json
@@ -20,7 +20,7 @@ class SessionDispatcher:
     if udp_port > 0:
       return json.stringify({"port": udp_port})
     else:
-      return (500, '') # Don't think this is right
+      return 500 # Don't think this is right?
 
   def stop_session(self, serial_number):
     self.session_coordinators.pop(serial_number)
