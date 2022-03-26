@@ -19,7 +19,7 @@ class Sensors:
     """
     url = os.getenv('GATEWAY_ROUTE')
     headers = {'Accept': 'application/json'}
-    auth = HTTPBasicAuth('apikey', self.api_key)
+    auth = HTTPBasicAuth('apiKey', self.api_key)
     response = requests.get(url + self.serial_number, headers=headers, auth=auth)
     if response.status_code == 200:
       self.sensor_list = response.json()
