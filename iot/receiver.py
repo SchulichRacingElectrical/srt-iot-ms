@@ -25,7 +25,6 @@ class Receiver:
     except socket.error as msg:
       print("Bind failed. Error: " + str(sys.exc_info()))
       self.coordinator.notify("error")
-<<<<<<< Updated upstream
     packet_resetter = threading.Thread(target = self.__handle_disconnect)
     packet_resetter.start()
     self.__read_data(soc)
@@ -38,13 +37,6 @@ class Receiver:
       self.last_packet_time = int(round(time.time() * 1000))
       data_snapshot = self.parser.parse_telemetry_message(message)
       self.coordinator.notify("snapshot", data_snapshot)
-=======
-      return -1
-    self.udp_listener = threading.Thread(target = self.__read_data)
-    self.udp_listener.start()
-    _, port = self.soc.getsockname()
-    return port
->>>>>>> Stashed changes
 
   def __handle_disconnect(self):
     while True:
