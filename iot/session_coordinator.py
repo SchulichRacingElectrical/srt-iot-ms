@@ -19,7 +19,12 @@ class SessionCoordinator:
     self.transmitter = Transmitter(hw_address)
 
   def notify(self, message, data):
+<<<<<<< Updated upstream
     if message == ("disconnection" | "error"):
+=======
+    Publisher.publish_message(message, self.api_key, self.serial_number, data)
+    if message == ("disconnection" or "error"):
+>>>>>>> Stashed changes
       self.dispatcher.stop_session(self.serial_number)
     publisher.publish_message(message, self.api_key, self.serial_number, data)
 
