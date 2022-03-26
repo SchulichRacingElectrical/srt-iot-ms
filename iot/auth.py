@@ -9,8 +9,6 @@ def require_api_key(f):
   def decorated(*args, **kwargs):
     key = request.headers.get('Authorization')
     if key == None: abort(401)
-    # Validate the api key with the gateway
-    # Make request to the api gateway either with the API key or jwt
-    
-    return f(key, *args, **kwargs)
+    if key == 'a':
+      return f(key, *args, **kwargs)
   return decorated
