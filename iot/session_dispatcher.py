@@ -1,8 +1,7 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from flask import request, Flask
-app = Flask(__name__) # Check this
+from iot.app import app
 from iot.auth import require_api_key
 from iot.session_coordinator import SessionCoordinator
 import json
