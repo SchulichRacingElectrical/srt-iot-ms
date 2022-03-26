@@ -30,7 +30,8 @@ class Receiver:
       return -1
     self.udp_listener = threading.Thread(target = self.__read_data)
     self.udp_listener.start()
-    return soc.getsockname()[1]
+    _, port = soc.getsockname()
+    return port
 
   def __read_data(self):
     while True:

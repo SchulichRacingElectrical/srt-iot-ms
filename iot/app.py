@@ -3,8 +3,10 @@
 
 from flask import Flask, request
 from iot.session_dispatcher import SessionDispatcher
+from iot.session_coordinator import SessionCoordinator
 from iot.auth import require_api_key
 from dotenv import load_dotenv
+import json
 load_dotenv()
 
 # Global Variables
