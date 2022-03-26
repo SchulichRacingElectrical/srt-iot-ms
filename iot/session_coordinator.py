@@ -1,8 +1,6 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from iot.app import app
-from flask import request
 from iot.sensors import Sensors
 from iot.receiver import Receiver
 from iot.transmitter import Transmitter

@@ -1,14 +1,14 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from flask import Flask
-app = Flask(__name__)
+from flask import Flask, request
 from iot.session_dispatcher import SessionDispatcher
 from iot.auth import require_api_key
 from dotenv import load_dotenv
 load_dotenv()
 
 # Global Variables
+app = Flask(__name__)
 dispatcher = SessionDispatcher()
 
 # Endpoints
