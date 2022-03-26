@@ -12,7 +12,7 @@ load_dotenv()
 dispatcher = SessionDispatcher()
 
 # Endpoints
-@app.route('/iot/<string:serial_number>/start')
+@app.route('/iot/<string:serial_number>/start', methods=['POST'])
 @require_api_key
 def start_session(key, serial_number):
   new_session = SessionCoordinator(dispatcher, key, serial_number, request.remote_addr)
@@ -23,24 +23,24 @@ def start_session(key, serial_number):
   else:
     return 500 # Don't think this is right?
 
-@app.route('/iot/<string:serial_number>/stop')
+@app.route('/iot/<string:serial_number>/stop', methods=['POST'])
 @require_api_key
 def stop_session(key, serial_number):
   pass
 
-@app.route('/iot/<string:serial_number>/sensors')
+@app.route('/iot/<string:serial_number>/sensors', methods=['GET'])
 @require_api_key
 def get_sensors(key, serial_number, last_retrieved_time):
   #   diff = self.sensors.get_sensor_diff(last_retrieved_time)
   #   return json.stringify(diff)
   pass
 
-@app.route('/iot/<string:serial_number>/sensor_diff')
+@app.route('/iot/<string:serial_number>/sensor_diff', methods=['GET'])
 @require_api_key
 def get_sensor_diff(key, serial_number):
   pass
 
-@app.route('/iot/<string:serial_number>/message')
+@app.route('/iot/<string:serial_number>/message', methods=['GET'])
 @require_api_key
 def send_message(key, serial_number):
   #   if request.is_json:
