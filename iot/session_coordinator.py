@@ -9,8 +9,7 @@ from iot.publisher import publisher
 import json
 
 class SessionCoordinator:
-  def __init__(self, dispatcher, api_key, thing_id, hw_address):
-    self.dispatcher = dispatcher
+  def __init__(self, api_key, thing_id, hw_address):
     self.api_key = api_key
     self.thing_id = thing_id
     self.receiver = Receiver(Sensors(api_key, thing_id), self)
@@ -22,4 +21,4 @@ class SessionCoordinator:
   def notify(self, message, data):
     publisher.publish_message(message, self.api_key, self.thing_id, data)
     if message == ("disconnection" | "error"):
-      self.dispatcher.stop_session(self.thing_id)
+      self.receiver.stop()

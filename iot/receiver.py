@@ -17,6 +17,7 @@ class Receiver:
   def __init__(self, sensors, coordinator):
     self.coordinator = coordinator
     self.connected = False
+    self.stopping = False
     self.parser = Parser(sensors)
 
   def start(self):
@@ -32,6 +33,11 @@ class Receiver:
     _, port = soc.getsockname()
     return port
 
+  def stop(self):
+    self.stopping = True
+    self.soc.settimeout(0.01)
+    self.udp_listener.join()
+
   def __read_data(self):
     while True:
       try:
@@ -43,5 +49,6 @@ class Receiver:
         data_snapshot = self.parser.parse_telemetry_message(message)
         self.coordinator.notify("snapshot", data_snapshot)
       except:
-        self.coordinator.notify("disconnection")
-        break
+        if not self.stopping:
+          self.coordinator.notify("disconnection")
+        return

@@ -20,7 +20,7 @@ that will handle incoming data from the IoT device.
 @app.route('/iot/<string:thing_id>/start', methods=['POST'])
 @require_api_key
 def start_session(key, thing_id):
-  new_session = SessionCoordinator(dispatcher, key, thing_id, request.remote_addr)
+  new_session = SessionCoordinator(key, thing_id, request.remote_addr)
   dispatcher.session_coordinators[thing_id] = new_session
   udp_port = new_session.start_receiver()
   if udp_port > 0:
