@@ -7,23 +7,26 @@ import json
 
 class Publisher:
   def __init__(self):
-    # url = os.getenv('REDIS_URL')
-    # port = os.getenv('REDIS_PORT')
-    self.url = "redis-16146.c239.us-east-1-2.ec2.cloud.redislabs.com"
-    self.port = 16146
-    self.redis_db = redis.Redis(host=self.url, port=self.port, username="abod", password="Rahman252?")
+    self.redis_db = redis.Redis(
+      host=os.getenv('REDIS_URL'), 
+      port=os.getenv('REDIS_PORT'), 
+      username=os.getenv('REDIS_USERNAME'), 
+      password=os.getenv('REDIS_PASSWORD')
+    )
 
-  def publish_message(self, message, api_key, serial_number, data):
+  def publish_message(self, message, api_key, thing_id, data):
     if message == "connection":
-      if not (self.redis_db.execute_command('JSON.GET', f'SIN_{serial_number}')):
-        self.redis_db.execute_command('JSON.SET', f'SIN_{serial_number}', '.', f'{{"api_key": {api_key}}}')
-        self.redis_db.publish(f'SIN_{serial_number}', json.dumps({"active": True, "SIN": serial_number}))
+      if not (self.redis_db.execute_command('JSON.GET', f'THING_{thing_id}')):
+        self.redis_db.execute_command('JSON.SET', f'THING_{thing_id}', '.', f'{{"api_key": {api_key}}}')
+        self.redis_db.publish(f'THING_{thing_id}', json.dumps({"active": True, "THING": thing_id}))
     elif message == "snapshot":
       timestamp = data['timestamp']
       del data['timestamp']
-      self.redis_db.execute_command('JSON.SET', f'SIN_{serial_number}', timestamp, json.dumps(data))
-      self.redis_db.publish(f'SIN_{serial_number}', json.dumps(data))
+      self.redis_db.execute_command('JSON.SET', f'THING_{thing_id}', timestamp, json.dumps(data))
+      self.redis_db.publish(f'THING_{thing_id}', json.dumps(data))
     elif message == "disconnection" or message == "error":
-      self.redis_db.execute_command('JSON.SET', f'SIN_{serial_number}', '.active', f'false')
-      response = {"active": False, "SIN": serial_number, "error": message == "error"}
-      self.redis_db.publish(f'SIN_{serial_number}', json.dumps(response))
+      self.redis_db.execute_command('JSON.SET', f'THING_{thing_id}', '.active', f'false')
+      response = {"active": False, "THING": thing_id, "error": message == "error"}
+      self.redis_db.publish(f'THING_{thing_id}', json.dumps(response))
+
+publisher = Publisher()

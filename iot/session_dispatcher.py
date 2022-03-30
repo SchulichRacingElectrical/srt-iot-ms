@@ -10,5 +10,6 @@ class SessionDispatcher:
   def __init__(self):
     self.session_coordinators = {}
 
-  def stop_session(self, serial_number):
-    self.session_coordinators.pop(serial_number)
+  def stop_session(self, thing_id):
+    self.session_coordinators[thing_id].notify("disconnection", "")
+    self.session_coordinators.pop(thing_id)

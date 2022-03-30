@@ -15,10 +15,9 @@ UDP variable frequency data receiver from telemetry hardware.
 """
 class Receiver:
   def __init__(self, sensors, coordinator):
-    self.sensors = sensors
     self.coordinator = coordinator
     self.connected = False
-    self.parser = Parser(self.sensors)
+    self.parser = Parser(sensors)
 
   def start(self):
     self.soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,7 +27,7 @@ class Receiver:
     except socket.error as msg:
       self.coordinator.notify("error")
       return -1
-    self.udp_listener = threading.Thread(target = self.__read_data)
+    self.udp_listener = threading.Thread(target=self.__read_data)
     self.udp_listener.start()
     _, port = soc.getsockname()
     return port
