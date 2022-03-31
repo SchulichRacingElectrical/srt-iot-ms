@@ -4,9 +4,7 @@
 from iot.sensors import Sensors
 from iot.receiver import Receiver
 from iot.transmitter import Transmitter
-from iot.auth import require_api_key
 from iot.publisher import publisher
-import json
 
 class SessionCoordinator:
   def __init__(self, api_key, thing_id, hw_address):
@@ -20,5 +18,5 @@ class SessionCoordinator:
 
   def notify(self, message, data):
     publisher.publish_message(message, self.api_key, self.thing_id, data)
-    if message == ("disconnection" | "error"):
+    if message == ("disconnection" or "error"):
       self.receiver.stop()

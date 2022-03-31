@@ -18,3 +18,12 @@ def require_api_key(f):
       return f(key, *args, **kwargs)
   decorated.__doc__ = f.__doc__
   return decorated
+
+def require_jwt(f):
+  @wraps(f)
+  def decorated(*args, **kwargs):
+    key = "" # Fetch key from the backend?
+    # Attempt to find the jwt
+    return f(key, *args, **kwargs)
+  decorated.__doc__ = f.__doc__
+  return decorated
