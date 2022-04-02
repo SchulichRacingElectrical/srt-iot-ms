@@ -16,6 +16,9 @@ class Transmitter:
     self.socket.connect((self.hw_address, 4000))
 
   def transmit_message(self, message):
-    # TODO: throw exception for bad message format or other errors
-    sent = self.socket.send(message)
-    return sent != 0
+    split = message.split(',')
+    if len(split[0]) == 0 and split[0].isdigit() and len(split) == 2:
+      sent = self.socket.send(message)
+      return sent != 0
+    else:
+      return False

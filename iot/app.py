@@ -30,7 +30,9 @@ def start_session(key, thing_id):
 
 """
 Used to transmit reliable messages to the hardware for display messages
-or requests to stop telemetry. 
+or requests to stop telemetry. Message format must be in the format 
+[CODE,MESSAGE], where the code is 0-9, and the message contains no additional
+commas. 
 """
 @app.route('/iot/<string:serial_number>/message', methods=['GET'])
 @require_jwt
@@ -39,7 +41,7 @@ def send_message(key, thing_id):
     try:
       message = request.json['message']
       success = dispatcher.session_coordinators[thing_id].transmitter.transmit_message(message)
-      if success and message == "stop":
+      if success and message == "0,stop":
         dispatcher.stop_session(thing_id)
       return "", 200 if success else "", 500
     except:
