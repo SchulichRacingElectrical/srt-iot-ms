@@ -17,7 +17,7 @@ class Sensors:
     headers = {'Accept': 'application/json', 'apiKey': self.api_key}
     response = requests.get(url + self.thing_id, headers=headers, auth=auth)
     if response.status_code == 200:
-      self.sensor_list = response.json() # Convert to dict?
+      self.sensor_list = response.json()
     return response.status_code == 200
 
   def get_sensor_type(self, small_id):

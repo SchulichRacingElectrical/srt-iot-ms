@@ -33,8 +33,7 @@ Used to transmit reliable messages to the hardware for display messages
 or requests to stop telemetry. 
 """
 @app.route('/iot/<string:serial_number>/message', methods=['GET'])
-@require_api_key
-# TODO: Should work via jwt as well?
+@require_jwt
 def send_message(key, thing_id):
   if request.is_json:
     try:
