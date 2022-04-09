@@ -1,1 +1,4 @@
 iot/.env
+
+# python
+__pycache__
