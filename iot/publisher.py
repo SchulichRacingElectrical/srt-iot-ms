@@ -29,4 +29,5 @@ class Publisher:
       response = {"active": False, "THING": thing_id, "error": message == "error"}
       self.redis_db.publish(f'THING_{thing_id}', json.dumps(response))
 
+# Singleton
 publisher = Publisher()

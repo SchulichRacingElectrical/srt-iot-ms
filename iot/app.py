@@ -23,15 +23,12 @@ def start_session(key, thing_id):
   new_session = SessionCoordinator(key, thing_id, request.remote_addr)
   dispatcher.session_coordinators[thing_id] = new_session
   udp_port = new_session.start_receiver()
-  if udp_port > 0:
-    return json.stringify({"port": udp_port})
-  else:
-    return "Could not start session.", 500
+  return json.stringify({"port": udp_port}) if udp_port > 0 else "Could not start session.", 500
 
 """
 Used to transmit reliable messages to the hardware for display messages
-or requests to stop telemetry. Message format must be in the format 
-[CODE,MESSAGE], where the code is 0-9, and the message contains no additional
+or requests to start/stop telemetry. Message format must be in the format 
+[CODE, MESSAGE], where the code is 0-9, and the message contains no additional
 commas. 
 """
 @app.route('/iot/<string:serial_number>/message', methods=['GET'])

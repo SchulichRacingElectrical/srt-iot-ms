@@ -35,7 +35,7 @@ class Receiver:
 
   def stop(self):
     self.stopping = True
-    self.soc.settimeout(0.01)
+    self.soc.settimeout(0.0001)
     self.udp_listener.join()
 
   def __read_data(self):
