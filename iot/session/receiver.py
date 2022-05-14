@@ -30,13 +30,13 @@ class Receiver:
       return -1
     self.udp_listener = threading.Thread(target=self.__read_data)
     self.udp_listener.start()
-    _, port = soc.getsockname()
+    _, port = self.soc.getsockname()
     return port
 
   def stop(self):
     self.stopping = True
     self.soc.settimeout(0.0001)
-    self.udp_listener.join()
+    # Join ?
 
   def __read_data(self):
     while True:
@@ -47,7 +47,7 @@ class Receiver:
           self.connected = True
           self.soc.settimeout(MESSAGE_TIMEOUT)
         data_snapshot = self.parser.parse_telemetry_message(message)
-        self.coordinator.notify("snapshot", data_snapshot)
+        # self.coordinator.notify("snapshot", data_snapshot)
       except:
         if not self.stopping:
           self.coordinator.notify("disconnection")

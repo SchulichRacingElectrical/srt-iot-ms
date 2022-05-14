@@ -19,11 +19,11 @@ class Parser:
 
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
-    timestamp = int.from_bytes(message.decode()[1:sensor_count + 1], "big", signed=False)
-    sensor_ids = list(message.decode()[5:sensor_count + 1])
+    timestamp = int.from_bytes(list(message[1:4]), "little", signed=False)
+    sensor_ids = list(message[5:5 + sensor_count])
     data_format = self.get_data_format(sensor_ids)
     data = struct.unpack(data_format, message[sensor_count + 5:])
-    data_snapshot = {"timestamp": timestamp}
+    data_snapshot = {"ts": timestamp}
     for i, sensor_id in enumerate(sensor_ids):
       data_snapshot[sensor_id] = data[i]
     return data_snapshot

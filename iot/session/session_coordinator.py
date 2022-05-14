@@ -16,7 +16,7 @@ class SessionCoordinator:
   def start_receiver(self):
     return self.receiver.start()
 
-  def notify(self, message, data):
+  def notify(self, message, data = {}):
     publisher.publish_message(message, self.api_key, self.thing_id, data)
     if message == ("disconnection" or "error"):
       self.receiver.stop()

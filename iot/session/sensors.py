@@ -13,12 +13,11 @@ class Sensors:
     self.fetch_sensors()
 
   def fetch_sensors(self):
-    url = os.getenv('GATEWAY_ROUTE') + "/api/database/sensors/" + self.thing_id
+    url = os.getenv('GATEWAY_ROUTE') + "/api/database/sensors/thing/" + self.thing_id
     headers = {'Accept': 'application/json', 'apiKey': self.api_key}
-    response = requests.get(url + self.thing_id, headers=headers, auth=auth)
+    response = requests.get(url, headers=headers)
     if response.status_code == 200:
-      print(response.json()) # TEMP
-      self.sensor_list = response.json()
+      self.sensor_list = (response.json())["data"]
     return response.status_code == 200
 
   def get_sensor_type(self, small_id):

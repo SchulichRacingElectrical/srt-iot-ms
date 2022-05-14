@@ -1,11 +1,10 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from iot.session.session_dispatcher import SessionDispatcher
 from iot.session.session_coordinator import SessionCoordinator
 from dotenv import load_dotenv
-import json
 load_dotenv()
 
 # Global Variables
@@ -16,13 +15,13 @@ dispatcher = SessionDispatcher()
 Used by hardware to start a session for the hardware. Spawns a session coordinator
 that will handle incoming data from the IoT device. 
 """
-@app.route('/<string:serial_number>/start', methods=['POST'])
+@app.route('/<string:serial_number>/start', methods=['GET'])
 def start_session(serial_number):
   key = request.headers.get('apiKey')
   new_session = SessionCoordinator(key, serial_number, request.remote_addr)
   dispatcher.session_coordinators[serial_number] = new_session
   udp_port = new_session.start_receiver()
-  if udp_port > 0: return json.stringify({"port": udp_port})
+  if udp_port > 0: return jsonify({"port": udp_port, "address": "127.0.0.1"}) # TODO: Get public ip address
   else: return "Could not start session.", 500
 
 """
