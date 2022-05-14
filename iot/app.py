@@ -4,6 +4,7 @@
 from flask import Flask, request, jsonify
 from iot.session.dispatcher import SessionDispatcher
 from iot.session.coordinator import SessionCoordinator
+from iot.redis.publisher import publisher
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -44,6 +45,9 @@ def send_message(serial_number):
   else:
     return "", 400
 
+"""
+TODO
+"""
 @app.route('/real-time/<string:serial_number>/sensor/<string:sensor_id>/data', methods=['GET'])
 def fetch_real_time_sensor_data(serial_number, sensor_id):
   # Read data from redis and return
