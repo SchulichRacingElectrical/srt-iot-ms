@@ -10,7 +10,7 @@ class Sensors:
     self.api_key = api_key
     self.thing_id = thing_id
     self.sensor_list = []
-    self.fetch_sensors()
+    self.fetch_sensors() # Do this elsewhere, check if it fails
 
   def fetch_sensors(self):
     url = os.getenv('GATEWAY_ROUTE') + "/api/database/sensors/thing/" + self.thing_id

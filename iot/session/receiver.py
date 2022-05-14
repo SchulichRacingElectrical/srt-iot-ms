@@ -36,18 +36,23 @@ class Receiver:
   def stop(self):
     self.stopping = True
     self.soc.settimeout(0.0001)
-    # Join ?
 
   def __read_data(self):
     while True:
       try:
         message, _ = self.soc.recvfrom(4096)
+        if self.stopping:
+          return
         if not self.connected:
           self.coordinator.notify("connection")
           self.connected = True
           self.soc.settimeout(MESSAGE_TIMEOUT)
+        if len(message) < 6:
+          continue
         data_snapshot = self.parser.parse_telemetry_message(message)
-        # self.coordinator.notify("snapshot", data_snapshot)
+        if data_snapshot == {}:
+          continue
+        self.coordinator.notify("snapshot", data_snapshot)
       except:
         if not self.stopping:
           self.coordinator.notify("disconnection")

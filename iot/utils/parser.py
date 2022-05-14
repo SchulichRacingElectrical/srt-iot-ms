@@ -3,7 +3,7 @@
 
 import struct
 
-sensor_types = {
+type_size_map = {
   'q': 8,           # long long
   'd': 8,           # double
   'f': 4,           # float
@@ -19,10 +19,16 @@ class Parser:
 
   def parse_telemetry_message(self, message):
     sensor_count = message[0]
+    if sensor_count == 0:
+      return {}
     timestamp = int.from_bytes(list(message[1:4]), "little", signed=False)
     sensor_ids = list(message[5:5 + sensor_count])
     data_format = self.get_data_format(sensor_ids)
+    if data_format == "":
+      return {}
     data = struct.unpack(data_format, message[sensor_count + 5:])
+    if len(data) == 0:
+      return {}
     data_snapshot = {"ts": timestamp}
     for i, sensor_id in enumerate(sensor_ids):
       data_snapshot[sensor_id] = data[i]
@@ -33,7 +39,9 @@ class Parser:
     running_count = 0
     for i, sensor_id in enumerate(sensor_ids):
       data_type = self.sensors.get_sensor_type(sensor_id)
-      data_size = sensor_types[data_type]
+      if data_type == "":
+        return ""
+      data_size = type_size_map[data_type]
       data_format += data_type
       running_count += data_size
       if running_count % 4 != 0:
@@ -44,7 +52,7 @@ class Parser:
         else:
           next_id = sensor_ids[i + 1]
           next_type = self.sensors.get_sensor_type(next_id)
-          next_size = sensor_types[next_type]
+          next_size = type_size_map[next_type]
           if next_size > remaining_bytes_in_word:
             data_format += 'x' * remaining_bytes_in_word
             running_count += remaining_bytes_in_word
