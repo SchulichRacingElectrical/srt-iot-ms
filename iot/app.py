@@ -49,7 +49,7 @@ def fetch_real_time_sensor_data(serial_number, sensor_id):
   # Read data from redis and return
   pass
 
-# Only allow traffic from local host via node js server
+# TODO: Only allow traffic from local host via node js server
 
 # Starting the server
 if __name__ == "__main__":  
