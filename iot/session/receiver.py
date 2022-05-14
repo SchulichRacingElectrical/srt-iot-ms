@@ -5,7 +5,7 @@ import sys
 import socket
 import threading
 import time
-from iot.parser import Parser
+from ..utils.parser import Parser
 
 CONNECTION_TIMEOUT = 10.0
 MESSAGE_TIMEOUT = 3.0

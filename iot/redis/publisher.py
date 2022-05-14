@@ -15,6 +15,7 @@ class Publisher:
     )
 
   def publish_message(self, message, api_key, thing_id, data):
+    print(data)
     if message == "connection":
       if not (self.redis_db.execute_command('JSON.GET', f'THING_{thing_id}')):
         self.redis_db.execute_command('JSON.SET', f'THING_{thing_id}', '.', f'{{"api_key": {api_key}}}')
@@ -28,6 +29,8 @@ class Publisher:
       self.redis_db.execute_command('JSON.SET', f'THING_{thing_id}', '.active', f'false')
       response = {"active": False, "THING": thing_id, "error": message == "error"}
       self.redis_db.publish(f'THING_{thing_id}', json.dumps(response))
+
+    # Also send to the api gateway, create init code
 
 # Singleton
 publisher = Publisher()

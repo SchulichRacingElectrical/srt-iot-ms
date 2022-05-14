@@ -2,9 +2,8 @@
 # Written By Justin Tijunelis
 
 from flask import Flask, request
-from iot.session_dispatcher import SessionDispatcher
-from iot.session_coordinator import SessionCoordinator
-from iot.auth import require_api_key
+from iot.session.session_dispatcher import SessionDispatcher
+from iot.session.session_coordinator import SessionCoordinator
 from dotenv import load_dotenv
 import json
 load_dotenv()
@@ -17,13 +16,14 @@ dispatcher = SessionDispatcher()
 Used by hardware to start a session for the hardware. Spawns a session coordinator
 that will handle incoming data from the IoT device. 
 """
-@app.route('/iot/<string:thing_id>/start', methods=['POST'])
-@require_api_key
-def start_session(key, thing_id):
-  new_session = SessionCoordinator(key, thing_id, request.remote_addr)
-  dispatcher.session_coordinators[thing_id] = new_session
+@app.route('/<string:serial_number>/start', methods=['POST'])
+def start_session(serial_number):
+  key = request.headers.get('apiKey')
+  new_session = SessionCoordinator(key, serial_number, request.remote_addr)
+  dispatcher.session_coordinators[serial_number] = new_session
   udp_port = new_session.start_receiver()
-  return json.stringify({"port": udp_port}) if udp_port > 0 else "Could not start session.", 500
+  if udp_port > 0: return json.stringify({"port": udp_port})
+  else: return "Could not start session.", 500
 
 """
 Used to transmit reliable messages to the hardware for display messages
@@ -31,9 +31,8 @@ or requests to start/stop telemetry. Message format must be in the format
 [CODE, MESSAGE], where the code is 0-9, and the message contains no additional
 commas. 
 """
-@app.route('/iot/<string:serial_number>/message', methods=['GET'])
-@require_jwt
-def send_message(key, thing_id):
+@app.route('/real-time/<string:serial_number>/message', methods=['POST'])
+def send_message(serial_number):
   if request.is_json:
     try:
       message = request.json['message']
@@ -45,6 +44,13 @@ def send_message(key, thing_id):
       return "", 500
   else:
     return "", 400
+
+@app.route('/real-time/<string:serial_number>/sensor/<string:sensor_id>/data', methods=['GET'])
+def fetch_real_time_sensor_data(serial_number, sensor_id):
+  # Read data from redis and return
+  pass
+
+# Only allow traffic from local host via node js server
 
 # Starting the server
 if __name__ == "__main__":  
