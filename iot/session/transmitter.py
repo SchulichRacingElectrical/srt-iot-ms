@@ -6,7 +6,7 @@ import socket
 """
 TCP communication with telemetry hardware. 
 """
-class Transmitter:
+class SessionTransmitter:
   def __init__(self, hw_address):
     self.hw_address = hw_address
     self.__connect()

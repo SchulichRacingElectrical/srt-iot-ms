@@ -5,7 +5,7 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 
-class Sensors:
+class SessionSensors:
   def __init__(self, api_key, thing_id):
     self.api_key = api_key
     self.thing_id = thing_id

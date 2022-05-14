@@ -1,7 +1,7 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-from ..session.session_coordinator import SessionCoordinator
+from ..session.coordinator import SessionCoordinator
 
 class SessionDispatcher:
   def __init__(self):

@@ -13,7 +13,7 @@ MESSAGE_TIMEOUT = 3.0
 """
 UDP variable frequency data receiver from telemetry hardware. 
 """
-class Receiver:
+class SessionReceiver:
   def __init__(self, sensors, coordinator):
     self.coordinator = coordinator
     self.connected = False

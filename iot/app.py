@@ -2,8 +2,8 @@
 # Written By Justin Tijunelis
 
 from flask import Flask, request, jsonify
-from iot.session.session_dispatcher import SessionDispatcher
-from iot.session.session_coordinator import SessionCoordinator
+from iot.session.dispatcher import SessionDispatcher
+from iot.session.coordinator import SessionCoordinator
 from dotenv import load_dotenv
 load_dotenv()
 
