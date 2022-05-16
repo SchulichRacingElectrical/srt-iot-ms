@@ -25,7 +25,12 @@ class SessionEmitter:
         def on_room_creation_error():
           self.stop()
 
-        # TODO: Handle reconnection?
+        @self.sio.on('disconnect')
+        def disconnect():
+          self.sio = None
+          self.room_created = False
+
+        # TODO: Handle reconnection - Recreate the new room
       except:
         self.stop()
 
@@ -36,5 +41,3 @@ class SessionEmitter:
   def stop(self):
     if self.sio != None:
       self.sio.disconnect()
-      self.sio = None
-      self.room_created = False
