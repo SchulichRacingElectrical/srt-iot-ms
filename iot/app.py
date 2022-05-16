@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from iot.session.dispatcher import SessionDispatcher
 from iot.session.coordinator import SessionCoordinator
 from iot.redis.publisher import publisher
+from iot.redis.reader import reader
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -48,10 +49,28 @@ def send_message(serial_number):
 """
 TODO
 """
-@app.route('/real-time/<string:serial_number>/sensor/<string:sensor_id>/data', methods=['GET'])
-def fetch_real_time_sensor_data(serial_number, sensor_id):
-  # Read data from redis and return
-  pass
+@app.route('/real-time/<string:thing_id>/data', methods=['GET', 'POST'])
+def fetch_real_time_thing_data(thing_id):
+  # TODO: Check request type
+  # Read sensor ids?
+  try:
+    data = reader.fetch_thing_data(thing_id)
+    return jsonify({data: data, message: "Success!"})
+  except:
+    return "", 500 # Say if redis error or thing not streaming
+
+"""
+
+"""
+@app.route('/real-time/<string:thing_id>/sensor/<string:sensor_id>/data', methods=['GET'])
+def fetch_real_time_sensor_data(thing_id, sensor_id):
+  # TODO
+  try:
+    data = reader.fetch_sensor_data(thing_id, sensor_ids)
+    return jsonify({data: data, message: "Hurray"})
+  except:
+    return "", 500 # Say if redis error or thing not streaming
+
 
 # TODO: Only allow traffic from local host via node js server
 
