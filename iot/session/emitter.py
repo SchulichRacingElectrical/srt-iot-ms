@@ -5,18 +5,17 @@ import os
 import socketio
 
 class SessionEmitter:
-  def __init__(self, thing_id, key):
+  def __init__(self, thing_id):
     self.thing_id = thing_id
-    self.api_key = key
     self.sio = None
     self.room_created = False
 
-  def start(self):
+  def start(self, key):
     if self.sio == None:
       try:
         self.sio = socketio.Client()
-        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={apiKey: self.api_key})
-        self.sio.emit('new room', self.thing_id)
+        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={apiKey: key})
+        self.sio.emit('new room', {thingId: self.thing_id, secret: os.getenv('NEW_ROOM_SECRET')})
 
         @self.sio.on('room created')
         def on_room_created():
