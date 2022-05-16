@@ -21,8 +21,8 @@ class SessionCoordinator:
       self.receiver = SessionReceiver(sensors, self)
       port = self.receiver.start()
       if port > 0:
-        self.emitter = SessionEmitter(self.thing_id, self.api_key)
-        self.emitter.start()
+        self.emitter = SessionEmitter(self.thing_id)
+        self.emitter.start(self.api_key)
         return port
       else: return -1
 

@@ -13,9 +13,9 @@ class SessionEmitter:
   def start(self, key):
     if self.sio == None:
       try:
-        self.sio = socketio.Client()
-        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={apiKey: key})
-        self.sio.emit('new room', {thingId: self.thing_id, secret: os.getenv('NEW_ROOM_SECRET')})
+        self.sio = socketio.Client(reconnection=False)
+        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={"key": key})
+        self.sio.emit('new room', {"thingId": self.thing_id, "secret": os.getenv('NEW_ROOM_SECRET')})
 
         @self.sio.on('room created')
         def on_room_created():
@@ -24,9 +24,10 @@ class SessionEmitter:
         @self.sio.on('room creation error')
         def on_room_creation_error():
           self.stop()
+
+        # TODO: Handle reconnection?
       except:
-        self.sio = None
-        print("Socket.io connection failed.")
+        self.stop()
 
   def emit_data(self, data):
     if self.sio != None and self.room_created:
