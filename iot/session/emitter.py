@@ -2,6 +2,7 @@
 # Written by Justin Tijunelis
 
 import os
+import asyncio
 import socketio
 
 class SessionEmitter:
@@ -10,12 +11,12 @@ class SessionEmitter:
     self.sio = None
     self.room_created = False
 
-  def start(self, key):
+  async def start(self, key):
     if self.sio == None:
       try:
-        self.sio = socketio.Client(reconnection=False)
-        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={"key": key})
-        self.sio.emit('new room', {"thingId": self.thing_id, "secret": os.getenv('NEW_ROOM_SECRET')})
+        self.sio = socketio.AsyncClient(reconnection=False)
+        await self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={"key": key})
+        await self.sio.emit('new room', {"thingId": self.thing_id, "secret": os.getenv('NEW_ROOM_SECRET')})
 
         @self.sio.on('room created')
         def on_room_created():

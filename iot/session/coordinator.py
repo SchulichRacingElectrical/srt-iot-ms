@@ -22,14 +22,15 @@ class SessionCoordinator:
       port = self.receiver.start()
       if port > 0:
         self.emitter = SessionEmitter(self.thing_id)
-        self.emitter.start(self.api_key)
+        # self.emitter.start(self.api_key)
         return port
       else: return -1
 
   def notify(self, message, data = {}):
-    publisher.publish_message(message, self.api_key, self.thing_id, data)
+    # publisher.publish_message(message, self.api_key, self.thing_id, data)
     if message == ("disconnection" or "error"):
       self.receiver.stop()
-      self.emitter.stop()
+      #self.emitter.stop()
     elif message == "snapshot":
-      self.emitter.emit_data(data)
+      print(data)
+      # self.emitter.emit_data(data)
