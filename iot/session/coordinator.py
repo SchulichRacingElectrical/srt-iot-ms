@@ -6,6 +6,8 @@ from ..session.receiver import SessionReceiver
 from ..session.transmitter import SessionTransmitter
 from ..session.emitter import SessionEmitter
 from ..redis.publisher import publisher
+import threading
+import asyncio
 
 class SessionCoordinator:
   def __init__(self, api_key, thing_id, hw_address):
@@ -26,10 +28,14 @@ class SessionCoordinator:
         return port
       else: return -1
 
-  async def notify(self, message, data = {}):
+  def emit_snapshot(self, data):
+    self.emitter.emit_data(data)
+
+  def notify(self, message):
+    asyncio.run(publisher.publish_message(message, self.api_key, self.thing_id, None))
     if message == ("disconnection" or "error"):
       self.receiver.stop()
       self.emitter.stop()
-    elif message == "snapshot":
-      self.emitter.emit_data(data)
-    publisher.publish_message(message, self.api_key, self.thing_id, data)
+
+  async def write_snapshot(self, snapshot):
+    await publisher.publish_message("snapshot", self.api_key, self.thing_id, snapshot)

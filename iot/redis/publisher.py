@@ -15,7 +15,7 @@ class RedisPublisher:
     )
     self.first_data = False
 
-  def publish_message(self, message, api_key, thing_id, data):
+  async def publish_message(self, message, api_key, thing_id, data):
     if message == "connection":
       # If existing, we must wait! Figure out what to do
       if not (self.redis_db.execute_command('JSON.GET', f'THING_{thing_id}')):
