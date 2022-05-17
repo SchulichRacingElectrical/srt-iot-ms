@@ -17,7 +17,8 @@ MESSAGE_TIMEOUT = 3.0
 UDP variable frequency data receiver from telemetry hardware. 
 """
 class SessionReceiver:
-  def __init__(self, thing):
+  def __init__(self, thing, close_callback):
+    self.close_callback = close_callback
     self.parser = Parser(thing)
     self.emitter = SessionEmitter(thing.api_key, thing.thing_id)
     self.publisher = RedisPublisher(thing.api_key, thing.thing_id)
@@ -105,4 +106,7 @@ class SessionReceiver:
         self.emitter.stop()
 
         print("DB written")
+
+        # Destroy the session coordinatior
+        if self.close_callback: self.close_callback(thing.thing_id)
         return

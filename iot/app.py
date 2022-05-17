@@ -21,7 +21,8 @@ def start_session(thing_id):
   key = request.headers.get('apiKey') # TODO: Check that this is here
   port = dispatcher.start_session(key, thing_id, request.remote_addr)
   if port > 0: 
-    return jsonify({"port": udp_port, "address": "127.0.0.1"}) # TODO: Get public ip address
+    # TODO: Get public ip address
+    return jsonify({"port": udp_port, "address": "127.0.0.1"}) 
   else: 
     return "Could not start session.", 500
 
