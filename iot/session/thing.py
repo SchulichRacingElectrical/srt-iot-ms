@@ -12,6 +12,7 @@ class SessionThing:
     self.sensor_list = []
 
   def fetch_sensors(self):
+    # TODO: Try catch?
     url = os.getenv('GATEWAY_ROUTE') + "/api/database/sensors/thing/" + self.thing_id
     headers = {'Accept': 'application/json', 'apiKey': self.api_key}
     response = requests.get(url, headers=headers)

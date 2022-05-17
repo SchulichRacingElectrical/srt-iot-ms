@@ -12,6 +12,7 @@ from ..redis.publisher import RedisPublisher
 
 CONNECTION_TIMEOUT = 10.0
 MESSAGE_TIMEOUT = 3.0
+BATCH_SIZE = 15 # Maximum number of elements that can be pushed to Redis at once
 
 """
 UDP variable frequency data receiver from telemetry hardware. 
@@ -23,7 +24,6 @@ class SessionReceiver:
     self.parser = Parser(thing)
     self.emitter = SessionEmitter(thing.api_key, thing.thing_id)
     self.publisher = RedisPublisher(thing.api_key, thing.thing_id)
-    self.dataQueueSize = thing.get_transmission_frequency()
     self.connected = False
     self.stopping = False
 
@@ -82,12 +82,12 @@ class SessionReceiver:
           # Emit data via socket.io - TODO: Should this be called in the background?
           self.emitter.emit_data(data_snapshot)
 
-          # Store data in Redis every second
+          # Store data in Redis every two seconds
           queuedSnapshots.append(data_snapshot)
-          if len(queuedSnapshots) >= self.dataQueueSize:
+          if len(queuedSnapshots) >= BATCH_SIZE:
             futures.append(
               asyncio.run_coroutine_threadsafe(
-                self.publisher.publish_snapshots(queuedSnapshots),
+                self.publisher.publish_snapshots(queuedSnapshots.copy()),
                 loop
               )
             )

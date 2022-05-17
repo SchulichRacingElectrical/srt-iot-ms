@@ -24,8 +24,7 @@ class RedisPublisher:
         '.', 
         json.dumps({
           "api_key": self.api_key, 
-          "active": True, 
-          "data": []
+          "active": True
         })
       )
       self.redis_db.publish(
@@ -52,15 +51,7 @@ class RedisPublisher:
 
   async def publish_snapshots(self, snapshots):
     snapshots_string = ""
-    for snapshot in data:
-      snapshots_string += json.dumps(snapshot) + " "
-    self.redis_db.execute_command(
-      'RPUSH', 
-      f'THING_{self.thing_id}_DATA', 
-      snapshots_string
-    )
-    self.redis_db.publish(
-      f'THING_{self.thing_id}_DATA', 
-      snapshots_string
-    )
-    # On subscriber 
+    for snapshot in snapshots:
+      snapshots_string += '"' + json.dumps(snapshot).replace('"', '').replace(" ", "") + '" '
+      print(json.loads(json.dumps(snapshot).replace('"', '').replace(" ", "")))
+    self.redis_db.execute_command(f'RPUSH THING_{self.thing_id}_DATA {snapshots_string}')
