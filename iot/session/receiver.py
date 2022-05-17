@@ -87,7 +87,7 @@ class SessionReceiver:
           if len(queuedSnapshots) >= BATCH_SIZE:
             futures.append(
               asyncio.run_coroutine_threadsafe(
-                self.publisher.publish_snapshots(queuedSnapshots.copy()),
+                self.publisher.push_snapshots(queuedSnapshots.copy()),
                 loop
               )
             )
