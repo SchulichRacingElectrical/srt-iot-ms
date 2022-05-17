@@ -1,6 +1,8 @@
 # Copyright Schulich Racing FSAE
 # Written By Abod Abbas, Justin Tijunelis
 
+# TODO: What if redis connection fails?
+
 import os
 import redis
 import json

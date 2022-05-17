@@ -3,6 +3,7 @@
 
 import os
 import redis
+import hjson
 
 class RedisReader:
   def __init__(self):

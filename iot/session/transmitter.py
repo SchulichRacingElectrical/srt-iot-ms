@@ -1,6 +1,8 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
+# TODO
+
 import socket
 
 """
@@ -12,8 +14,11 @@ class SessionTransmitter:
     self.__connect()
 
   def __connect(self):
-    self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.socket.connect((self.hw_address, 4000))
+    try:
+      self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      self.socket.connect((self.hw_address, 4000))
+    except:
+      pass
 
   def transmit_message(self, message):
     split = message.split(',')
