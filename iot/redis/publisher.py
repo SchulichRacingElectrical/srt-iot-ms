@@ -53,5 +53,4 @@ class RedisPublisher:
     snapshots_string = ""
     for snapshot in snapshots:
       snapshots_string += '"' + json.dumps(snapshot).replace('"', '').replace(" ", "") + '" '
-      print(json.loads(json.dumps(snapshot).replace('"', '').replace(" ", "")))
     self.redis_db.execute_command(f'RPUSH THING_{self.thing_id}_DATA {snapshots_string}')

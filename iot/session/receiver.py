@@ -12,7 +12,7 @@ from ..redis.publisher import RedisPublisher
 
 CONNECTION_TIMEOUT = 10.0
 MESSAGE_TIMEOUT = 3.0
-BATCH_SIZE = 15 # Maximum number of elements that can be pushed to Redis at once
+BATCH_SIZE = 25 # Maximum number of elements that can be pushed to Redis at once
 
 """
 UDP variable frequency data receiver from telemetry hardware. 
@@ -101,7 +101,6 @@ class SessionReceiver:
         # Wait for all Redis writing to complete
         for future in futures: future.result()
         loop.call_soon_threadsafe(loop.stop)
-        print("DB written")
 
         # Clean up objects
         self.publisher.publish_disconnection()
