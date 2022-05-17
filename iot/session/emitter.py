@@ -6,16 +6,17 @@ import asyncio
 import socketio
 
 class SessionEmitter:
-  def __init__(self, thing_id):
+  def __init__(self, key, thing_id):
+    self.api_key = key
     self.thing_id = thing_id
     self.sio = None
     self.room_created = False
 
-  def start(self, key):
+  def start(self):
     if self.sio == None:
       try:
         self.sio = socketio.Client(reconnection=False)
-        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={"key": key})
+        self.sio.connect(os.getenv('GATEWAY_ROUTE'), headers={"key": self.api_key})
         self.sio.emit('new room', {"thingId": self.thing_id, "secret": os.getenv('NEW_ROOM_SECRET')})
 
         @self.sio.on('room created')

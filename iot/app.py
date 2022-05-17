@@ -4,7 +4,6 @@
 from flask import Flask, request, jsonify
 from iot.session.dispatcher import SessionDispatcher
 from iot.session.coordinator import SessionCoordinator
-from iot.redis.publisher import publisher
 from iot.redis.reader import reader
 from dotenv import load_dotenv
 load_dotenv()
@@ -17,14 +16,14 @@ dispatcher = SessionDispatcher()
 Used by hardware to start a session for the hardware. Spawns a session coordinator
 that will handle incoming data from the IoT device. 
 """
-@app.route('/<string:serial_number>/start', methods=['GET'])
-def start_session(serial_number):
-  key = request.headers.get('apiKey')
-  new_session = SessionCoordinator(key, serial_number, request.remote_addr)
-  dispatcher.session_coordinators[serial_number] = new_session
-  udp_port = new_session.start_receiver()
-  if udp_port > 0: return jsonify({"port": udp_port, "address": "127.0.0.1"}) # TODO: Get public ip address
-  else: return "Could not start session.", 500
+@app.route('/<string:thing_id>/start', methods=['GET'])
+def start_session(thing_id):
+  key = request.headers.get('apiKey') # TODO: Check that this is here
+  port = dispatcher.start_session(key, thing_id, request.remote_addr)
+  if port > 0: 
+    return jsonify({"port": udp_port, "address": "127.0.0.1"}) # TODO: Get public ip address
+  else: 
+    return "Could not start session.", 500
 
 """
 Used to transmit reliable messages to the hardware for display messages
@@ -32,8 +31,8 @@ or requests to start/stop telemetry. Message format must be in the format
 [CODE, MESSAGE], where the code is 0-9, and the message contains no additional
 commas. 
 """
-@app.route('/real-time/<string:serial_number>/message', methods=['POST'])
-def send_message(serial_number):
+@app.route('/real-time/<string:thing_id>/message', methods=['POST'])
+def send_message(thing_id):
   if request.is_json:
     try:
       message = request.json['message']

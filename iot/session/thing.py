@@ -5,7 +5,7 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 
-class SessionSensors:
+class SessionThing:
   def __init__(self, api_key, thing_id):
     self.api_key = api_key
     self.thing_id = thing_id
@@ -23,7 +23,10 @@ class SessionSensors:
     sensors = list(filter(lambda s: s['smallId'] == small_id, self.sensor_list))
     return sensors[0]['type'] if len(sensors) != 0 else ""
 
-  # Just for unit testing right now
-  def set_sensor_list(self, sensor_list):
-    self.sensor_list = sensor_list
+  def get_transmission_frequency(self):
+    highest_frequency = 0
+    for sensor in self.sensor_list:
+      if sensor["frequency"] > highest_frequency:
+        highest_frequency = sensor
+    return highest_frequency
     

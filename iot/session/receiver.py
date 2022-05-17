@@ -7,7 +7,8 @@ import threading
 import asyncio
 import time
 from ..utils.parser import Parser
-from ..redis.publisher import publisher
+from ..session.emitter import SessionEmitter
+from ..redis.publisher import RedisPublisher
 
 CONNECTION_TIMEOUT = 10.0
 MESSAGE_TIMEOUT = 3.0
@@ -16,32 +17,37 @@ MESSAGE_TIMEOUT = 3.0
 UDP variable frequency data receiver from telemetry hardware. 
 """
 class SessionReceiver:
-  def __init__(self, sensors, coordinator):
-    self.coordinator = coordinator
-    self.parser = Parser(sensors)
+  def __init__(self, thing):
+    self.parser = Parser(thing)
+    self.emitter = SessionEmitter(thing.api_key, thing.thing_id)
+    self.publisher = RedisPublisher(thing.api_key, thing.thing_id)
+    self.dataQueueSize = thing.get_transmission_frequency()
     self.connected = False
     self.stopping = False
 
   def start(self):
-    self.soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
+      # Attempt to open the socket
+      self.soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       self.soc.bind(('', 0))
       self.soc.settimeout(CONNECTION_TIMEOUT)
+
+      # Start the listener thread
+      def loop(): asyncio.run(self.__read_data())
+      threading.Thread(target=loop).start()
+
+      # Start the emitter if the port is valid
+      _, port = self.soc.getsockname()
+      if port > 0: self.emitter.start()
+      return port
     except socket.error as msg:
-      self.coordinator.notify("error")
       return -1
-    def loop():
-      asyncio.run(self.__read_data())
-    self.udp_listener = threading.Thread(target=loop)
-    self.udp_listener.start()
-    _, port = self.soc.getsockname()
-    return port
 
   def stop(self):
     self.stopping = True
     self.soc.settimeout(0.0001)
 
-  def __read_data(self):
+  async def __read_data(self):
     # Create an event loop for writing to Redis in the background
     futures = []
     queuedSnapshots = []
@@ -55,14 +61,14 @@ class SessionReceiver:
         # Wait for data from thing
         message, _ = self.soc.recvfrom(4096)
 
-        # Handle first connection
-        if not self.connected:
-          self.coordinator.notify("connection")
-          self.connected = True
-          self.soc.settimeout(MESSAGE_TIMEOUT)
-        
         # Handle manual stop
         if self.stopping: raise Exception("Stopping")
+
+        # Handle first connection
+        if not self.connected:
+          self.publisher.publish_connection()
+          self.connected = True
+          self.soc.settimeout(MESSAGE_TIMEOUT)
         
         # Parse the data into a snapshot
         data_snapshot = self.parser.parse_telemetry_message(message)
@@ -72,24 +78,31 @@ class SessionReceiver:
           prev_snapshot = data_snapshot
 
           # Emit data via socket.io - TODO: Should this be called in the background?
-          self.coordinator.emit_snapshot(data_snapshot)
+          self.emitter.emit_data(data_snapshot)
 
-          # Store data in Redis
-          futures.append(
-            asyncio.run_coroutine_threadsafe(
-              self.coordinator.write_snapshot(data_snapshot),
-              loop
+          # Store data in Redis every second
+          queuedSnapshots.append(data_snapshot)
+          if len(queuedSnapshots) >= self.dataQueueSize:
+            futures.append(
+              asyncio.run_coroutine_threadsafe(
+                self.publisher.publish_snapshots(queuedSnapshots),
+                loop
+              )
             )
-          )
+            queuedSnapshots.clear()
 
         # Clean up the futures as they complete
         for future in futures:
           if future._state == "FINISHED":
             futures.remove(future)
       except:
-        for future in futures:
-         future.result()
+        # Wait for all Redis writing to complete
+        for future in futures: future.result()
         loop.call_soon_threadsafe(loop.stop)
-        if not self.stopping:
-          self.coordinator.notify("disconnection")
+
+        # Clean up objects
+        self.publisher.publish_disconnection()
+        self.emitter.stop()
+
+        print("DB written")
         return
