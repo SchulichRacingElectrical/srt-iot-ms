@@ -9,9 +9,9 @@ class SessionDispatcher:
 
   def start_session(self, key, thing_id, hw_address):
     new_session = SessionCoordinator(hw_address)
-    udp_port = new_session.start_receiver(key, serial_number, self.delete_session) # Make sure this supports ipv6
+    udp_port = new_session.start_receiver(key, thing_id, self.delete_session) # Make sure this supports ipv6
     if udp_port > 0:
-      self.session_coordinators[serial_number] = new_session
+      self.session_coordinators[thing_id] = new_session
     return udp_port
 
   def stop_session(self, thing_id):

@@ -27,6 +27,6 @@ class SessionThing:
     highest_frequency = 0
     for sensor in self.sensor_list:
       if sensor["frequency"] > highest_frequency:
-        highest_frequency = sensor
+        highest_frequency = sensor["frequency"]
     return highest_frequency
     

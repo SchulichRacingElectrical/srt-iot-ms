@@ -18,6 +18,7 @@ UDP variable frequency data receiver from telemetry hardware.
 """
 class SessionReceiver:
   def __init__(self, thing, close_callback):
+    self.thing = thing
     self.close_callback = close_callback
     self.parser = Parser(thing)
     self.emitter = SessionEmitter(thing.api_key, thing.thing_id)
@@ -100,13 +101,12 @@ class SessionReceiver:
         # Wait for all Redis writing to complete
         for future in futures: future.result()
         loop.call_soon_threadsafe(loop.stop)
+        print("DB written")
 
         # Clean up objects
         self.publisher.publish_disconnection()
         self.emitter.stop()
 
-        print("DB written")
-
-        # Destroy the session coordinatior
-        if self.close_callback: self.close_callback(thing.thing_id)
+        # Destroy the session coordinator
+        if self.close_callback: self.close_callback(self.thing.thing_id)
         return

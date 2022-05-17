@@ -11,10 +11,10 @@ class SessionCoordinator:
     self.hw_address = hw_address
     # self.transmitter = SessionTransmitter(hw_address)
 
-  def start_receiver(self, key, thing_id, close_callback = None):
+  def start_receiver(self, key, thing_id, close_callback):
     thing = SessionThing(key, thing_id)
     if thing.fetch_sensors():
-      self.receiver = SessionReceiver(thing, on_close)
+      self.receiver = SessionReceiver(thing, close_callback)
       port = self.receiver.start()
       return port if port > 0 else -1
     else:
