@@ -9,9 +9,10 @@ import time
 from ..utils.parser import Parser
 from ..session.emitter import SessionEmitter
 from ..redis.publisher import RedisPublisher
+from ..redis.reader import reader
 
-CONNECTION_TIMEOUT = 10.0
-MESSAGE_TIMEOUT = 3.0
+CONNECTION_TIMEOUT = 10.0 # Should this be longer?
+MESSAGE_TIMEOUT = 3.0 # TODO: This should change based on the sending frequency
 BATCH_SIZE = 25 # Maximum number of elements that can be pushed to Redis at once
 
 """
@@ -52,10 +53,17 @@ class SessionReceiver:
   async def __read_data(self):
     # Create an event loop for writing to Redis in the background
     futures = []
-    queuedSnapshots = []
-    prev_snapshot = {"ts": -1}
     loop = asyncio.new_event_loop()
     threading.Thread(target=loop.run_forever).start()
+
+    # For sending batches
+    queued_snapshots = [] 
+
+    # For the reader to merge real-time and db data
+    reader.init_thing_queue(self.thing)
+
+    # To avoid sending out of order data
+    prev_snapshot = {"ts": -1}
 
     # Read forever until something causes a stoppage
     while True:
@@ -82,16 +90,19 @@ class SessionReceiver:
           # Emit data via socket.io - TODO: Should this be called in the background?
           self.emitter.emit_data(data_snapshot)
 
-          # Store data in Redis every two seconds
-          queuedSnapshots.append(data_snapshot)
-          if len(queuedSnapshots) >= BATCH_SIZE:
+          # Store data in Redis in batches of 25
+          queued_snapshots.append(data_snapshot)
+          if len(queued_snapshots) == BATCH_SIZE:
             futures.append(
               asyncio.run_coroutine_threadsafe(
-                self.publisher.push_snapshots(queuedSnapshots.copy()),
+                self.publisher.push_snapshots(queued_snapshots.copy()),
                 loop
               )
             )
-            queuedSnapshots.clear()
+            queued_snapshots.clear()
+          
+          # Store in the long queue of the redis reader
+          reader.push_queue_snapshot(self.thing.thing_id, data_snapshot)
 
         # Clean up the futures as they complete
         for future in futures:

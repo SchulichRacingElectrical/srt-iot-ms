@@ -49,28 +49,15 @@ def send_message(thing_id):
 """
 TODO
 """
-@app.route('/real-time/<string:thing_id>/data', methods=['GET', 'POST'])
+@app.route('/real-time/<string:thing_id>/data', methods=['GET'])
 def fetch_real_time_thing_data(thing_id):
-  # TODO: Check request type
-  # Read sensor ids?
   try:
     data = reader.fetch_thing_data(thing_id)
+    if data == None:
+      return "", 404
     return jsonify({data: data, message: "Success!"})
   except:
     return "", 500 # Say if redis error or thing not streaming
-
-"""
-
-"""
-@app.route('/real-time/<string:thing_id>/sensor/<string:sensor_id>/data', methods=['GET'])
-def fetch_real_time_sensor_data(thing_id, sensor_id):
-  # TODO
-  try:
-    data = reader.fetch_sensor_data(thing_id, sensor_ids)
-    return jsonify({data: data, message: "Hurray"})
-  except:
-    return "", 500 # Say if redis error or thing not streaming
-
 
 # TODO: Only allow traffic from local host via node js server
 
