@@ -114,6 +114,7 @@ class SessionReceiver:
 
         # Clean up objects
         self.publisher.publish_disconnection()
+        reader.destory_thing_queue(self.thing.thing_id)
         self.emitter.stop()
 
         # Destroy the session coordinator

@@ -21,7 +21,7 @@ class RedisReader:
 
   # TODO: Test this
   def fetch_thing_data(self, thing_id):
-    if self.queued_snapshots[thing_id]:
+    if thing_id in self.queued_snapshots:
       # Read data from redis
       stored_data_list = hjson.loads(self.redis_db.get(thing_id)) # TODO: Don't think this actually works
       if len(stored_data_list) == 0:
@@ -49,7 +49,7 @@ class RedisReader:
       return None
 
   def init_thing_queue(self, thing):
-    if not self.queued_snapshots[thing.thing_id]:
+    if thing.thing_id not in self.queued_snapshots:
       self.queued_snapshots[thing.thing_id] = {
         "snapshots": [],
         # Store past seconds to merge with db data if it has not been written yet
@@ -57,13 +57,14 @@ class RedisReader:
       }
 
   def push_queue_snapshot(self, thing_id, snapshot):
-    self.queued_snapshots[thing_id]["snapshots"].append(snapshot)
-    size = len(self.queued_snapshots[thing_id]["snapshots"])
-    if size == self.queued_snapshots[thing_id]["max_queue_size"]:
-      self.queued_snapshots[thing_id].pop(0)
+    if thing_id in self.queued_snapshots:
+      self.queued_snapshots[thing_id]["snapshots"].append(snapshot)
+      size = len(self.queued_snapshots[thing_id]["snapshots"])
+      if size == self.queued_snapshots[thing_id]["max_queue_size"]:
+        self.queued_snapshots[thing_id].pop(0)
 
   def destory_thing_queue(self, thing_id):
-    if self.queued_snapshots[thing_id]:
+    if thing_id in self.queued_snapshots:
       del self.queued_snapshots[thing_id]
 
 reader = RedisReader()
