@@ -43,6 +43,7 @@ class RedisReader:
           cut_index = (last_redis_timestamp - queue_start_timestamp) / math.ceil(1000 / frequency)
           current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
 
+      print(current_data) # FOR TESTING
       return current_data
     else:
       return None

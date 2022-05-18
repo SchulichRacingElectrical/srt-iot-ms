@@ -11,8 +11,7 @@ from ..session.emitter import SessionEmitter
 from ..redis.publisher import RedisPublisher
 from ..redis.reader import reader
 
-CONNECTION_TIMEOUT = 10.0 # Should this be longer?
-MESSAGE_TIMEOUT = 3.0 # TODO: This should change based on the sending frequency
+CONNECTION_TIMEOUT = 10.0 
 BATCH_SIZE = 25 # Maximum number of elements that can be pushed to Redis at once
 
 """
@@ -78,7 +77,7 @@ class SessionReceiver:
         if not self.connected:
           self.publisher.publish_connection()
           self.connected = True
-          self.soc.settimeout(MESSAGE_TIMEOUT)
+          self.soc.settimeout(min(2 / thing.get_transmission_frequency(), 2))
         
         # Parse the data into a snapshot
         data_snapshot = self.parser.parse_telemetry_message(message)
@@ -87,7 +86,7 @@ class SessionReceiver:
         if data_snapshot and prev_snapshot["ts"] < data_snapshot["ts"]:
           prev_snapshot = data_snapshot
 
-          # Emit data via socket.io - TODO: Should this be called in the background?
+          # Emit data via socket.io
           self.emitter.emit_data(data_snapshot)
 
           # Store data in Redis in batches of 25
