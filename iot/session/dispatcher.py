@@ -15,8 +15,10 @@ class SessionDispatcher:
     return udp_port
 
   def stop_session(self, thing_id):
-    self.session_coordinators[thing_id].stop()
-    del self.session_coordinators[thing_id]
+    if thing_id in self.session_coordinators:
+      self.session_coordinators[thing_id].stop()
+      del self.session_coordinators[thing_id]
 
   def delete_session(self, thing_id):
-    del self.session_coordinators[thing_id]
+    if thing_id in self.session_coordinators:
+      del self.session_coordinators[thing_id]

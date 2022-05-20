@@ -1,6 +1,8 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
+import json
+import urllib.request
 from flask import Flask, request, jsonify
 from iot.session.dispatcher import SessionDispatcher
 from iot.session.coordinator import SessionCoordinator
@@ -18,11 +20,14 @@ that will handle incoming data from the IoT device.
 """
 @app.route('/<string:thing_id>/start', methods=['GET'])
 def start_session(thing_id):
-  key = request.headers.get('apiKey') # TODO: Check that this is here
+  key = request.headers.get('apiKey')
+  if not key:
+    return "Not authorized.", 401
   port = dispatcher.start_session(key, thing_id, request.remote_addr)
   if port > 0: 
-    # TODO: Get public ip address
-    return jsonify({"port": port, "address": "127.0.0.1"}) 
+    data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read())
+    # data["ip"]
+    return jsonify({"port": port, "address": "127.0.0.1"})
   else: 
     return "Could not start session.", 500
 
@@ -57,7 +62,7 @@ def fetch_real_time_thing_data(thing_id):
       return "", 404
     return jsonify({data: data, message: "Success!"})
   except:
-    return "", 500 # Say if redis error or thing not streaming
+    return "", 500
 
 # TODO: Only allow traffic from local host via node js server
 

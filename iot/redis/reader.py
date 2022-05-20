@@ -53,6 +53,7 @@ class RedisReader:
       self.queued_snapshots[thing.thing_id] = {
         "snapshots": [],
         # Store past seconds to merge with db data if it has not been written yet
+        # TODO: Should be a function of the size of the database as well
         "max_queue_size": thing.get_transmission_frequency() * QUEUE_TIME_TO_STORE,
       }
 

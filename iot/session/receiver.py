@@ -77,7 +77,7 @@ class SessionReceiver:
         if not self.connected:
           self.publisher.publish_connection()
           self.connected = True
-          self.soc.settimeout(min(2 / thing.get_transmission_frequency(), 2))
+          self.soc.settimeout(3) # TODO: Change timeout depending on freq
         
         # Parse the data into a snapshot
         data_snapshot = self.parser.parse_telemetry_message(message)
@@ -101,7 +101,7 @@ class SessionReceiver:
             queued_snapshots.clear()
           
           # Store in the long queue of the redis reader
-          reader.push_queue_snapshot(self.thing.thing_id, data_snapshot)
+          # reader.push_queue_snapshot(self.thing.thing_id, data_snapshot)
 
         # Clean up the futures as they complete
         for future in futures:
