@@ -2,12 +2,19 @@
 # Written By Abod Abbas and Justin Tijunelis
 
 import json
+import os
 
 import redis
+from dotenv import load_dotenv
 
-url = "redis-16146.c239.us-east-1-2.ec2.cloud.redislabs.com"
-port = 16146
-client = redis.Redis(host=url, port=port, username="abod", password="Rahman252?")
+load_dotenv()
+
+client = redis.Redis(
+    host=os.environ["REDIS_URL"],
+    port=os.environ["REDIS_PORT"],
+    username=os.environ["REDIS_USERNAME"],
+    password=os.environ["REDIS_PASSWORD"],
+)
 
 env = "SIN_1"
 
