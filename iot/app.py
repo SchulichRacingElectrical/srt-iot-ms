@@ -72,7 +72,7 @@ def fetch_real_time_thing_data(thing_id):
         data = reader.fetch_thing_data(thing_id)
         if data == None:
             return "", 404
-        return jsonify({data: data, message: "Success!"})
+        return jsonify({"data": data, "message": "Success!"})
     except:
         return "", 500
 
