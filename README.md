@@ -1,27 +1,15 @@
 # srv-iot-ms
 
-Micro-service for SR Telemetry communications with onboard hardware.
+Microservice for SR Telemetry communications with onboard hardware.
 
-# Running
+## Setting Up
 
-Make sure to enter the python environment 'env' by:
+Package management and virtual environment is managed by `poetry`. If you don't already have it installed, install `poetry` by running the command for your OS listed on [this page](https://python-poetry.org/docs/#installation).
 
-source env/bin/activate
+After installing, run `poetry install` from within the root project directory to install any dependencies.
 
-To leave the environment:
+Once dependencies are installed, run `poetry shell` to activate the environment.
 
-deactivate
+## Running
 
-If you install a new pip library, after installing, be sure to do this:
-
-pip3 freeze > requirements.txt
-
-# Running the hardware simulation
-
-Depending on your machine, there will be different commands to run the run.sh bash file that compiles and executes the simulation.
-
-On MacOS:
-
-bash ./run.sh
-
-If you add a new C and header file, update the bash file to include the new file in the compilation.
+With the environment activated in your shell as described above, simply run `flask run` to run the service.
