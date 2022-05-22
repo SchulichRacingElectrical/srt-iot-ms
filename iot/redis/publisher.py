@@ -22,7 +22,7 @@ class RedisPublisher:
 
     def publish_connection(self):
         self.redis_db.publish(
-            f"THING_{self.thing_id}", json.dumps({"active": True, "THING": self.thing_id})
+            "THING_CONNECTION", json.dumps({"active": True, "THING": self.thing_id})
         )
 
     def publish_disconnection(self):
