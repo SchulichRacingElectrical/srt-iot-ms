@@ -1,4 +1,4 @@
-iot/.env
+.env
 .pytest_cache
 */__pycache__
 .vscode
