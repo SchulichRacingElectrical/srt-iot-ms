@@ -31,7 +31,7 @@ class RedisPublisher:
         )
 
     async def push_snapshots(self, snapshots):
-        snapshots_string = ""
-        for snapshot in snapshots:
-            snapshots_string += '"' + json.dumps(snapshot).replace('"', "").replace(" ", "") + '" '
+        snapshots_string = " ".join(
+            [json.dumps(snapshot).replace(" ", "") for snapshot in snapshots]
+        )
         self.redis_db.execute_command(f"RPUSH THING_{self.thing_id} {snapshots_string}")
