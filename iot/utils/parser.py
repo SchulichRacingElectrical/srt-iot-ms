@@ -4,14 +4,17 @@
 import struct
 
 type_size_map = {
-    "q": 8,  # long long
-    "d": 8,  # double
-    "f": 4,  # float
-    "i": 4,  # integer
-    "h": 2,  # short
-    "c": 1,  # char
     "?": 1,  # bool
-    # TODO: Add all supported formats!
+    "c": 1,  # char (signed byte)
+    "B": 1,  # unsigned byte
+    "h": 2,  # short
+    "H": 2,  # unsigned short   
+    "i": 4,  # integer
+    "I": 4,  # unsigned integer
+    "f": 4,  # float
+    "q": 8,  # long long
+    "Q": 8,  # unsigned long long
+    "d": 8,  # double
 }
 
 
