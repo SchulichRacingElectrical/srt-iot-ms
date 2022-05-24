@@ -2,16 +2,17 @@
 # Written by Justin Tijunelis
 
 import os
-
+import time
 import socketio
 
-
 class SessionEmitter:
-    def __init__(self, key, thing_id):
+    def __init__(self, key, thing_id, frequency):
         self.api_key = key
         self.thing_id = thing_id
         self.sio = None
         self.room_created = False
+        self.frequency = frequency
+        self.last_send_time = round(time.time() * 1000) 
 
     def start(self):
         if self.sio == None:
@@ -39,9 +40,16 @@ class SessionEmitter:
             except:
                 self.stop()
 
-    def emit_data(self, data):
+    def emit_data(self, data): # We send data at a max of 20 Hz
         if self.sio != None and self.room_created:
-            self.sio.emit("data", data)
+            if self.frequency <= 20:
+                self.sio.emit("data", data)
+            else:
+                current_time = round(time.time() * 1000)
+                time_diff = current_time - self.last_send_time
+                if time_diff > 50:
+                    self.sio.emit("data", data)
+                    self.last_send_time = current_time
 
     def stop(self):
         if self.sio != None:

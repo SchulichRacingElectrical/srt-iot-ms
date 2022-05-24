@@ -23,7 +23,7 @@ class SessionReceiver:
         self.thing = thing
         self.close_callback = close_callback
         self.parser = Parser(thing)
-        self.emitter = SessionEmitter(thing.api_key, thing.thing_id)
+        self.emitter = SessionEmitter(thing.api_key, thing.thing_id, thing.get_transmission_frequency())
         self.publisher = RedisPublisher(thing.api_key, thing.thing_id)
         self.connected = False
         self.stopping = False

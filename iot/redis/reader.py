@@ -7,6 +7,7 @@ import json
 import redis
 
 QUEUE_TIME_TO_STORE = 5
+MAX_TRANSMISSION_FREQUENCY = 20
 
 class RedisReader:
     def __init__(self):
@@ -52,7 +53,18 @@ class RedisReader:
                     ))
                     current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
 
-            # TODO: Reduce frequency of the data
+            # Decimate the data to a max of MAX_TRANSMISSION_FREQUENCY Hz
+            if self.queued_snapshots[thing_id]["frequency"] > MAX_TRANSMISSION_FREQUENCY:
+                decimated_data = [current_data[0]]
+                last_pushed_timestamp = decimated_data[0]["ts"]
+                for datum in current_data:
+                    current_timestamp = datum["ts"]
+                    time_diff = current_timestamp - last_pushed_timestamp
+                    if time_diff >= (1000 / MAX_TRANSMISSION_FREQUENCY):
+                        decimated_data.append(datum)
+                        last_pushed_timestamp = current_timestamp
+                current_data = decimated_data
+
             return current_data
         else:
             return None
@@ -64,11 +76,15 @@ class RedisReader:
                 # Store past seconds to merge with db data if it has not been written yet
                 # TODO: Should be a function of the size of the database as well
                 "max_queue_size": thing.get_transmission_frequency() * QUEUE_TIME_TO_STORE,
+                "frequency": thing.get_transmission_frequency(),
+                "db_size": 0
             }
 
     def push_queue_snapshot(self, thing_id, snapshot):
         if thing_id in self.queued_snapshots:
             self.queued_snapshots[thing_id]["snapshots"].append(snapshot)
+            self.queued_snapshots[thing_id]["db_size"] += len(json.dumps(snapshot))
+            # TODO: Based on download speed, resolve how big the queue should be
             size = len(self.queued_snapshots[thing_id]["snapshots"])
             if size == self.queued_snapshots[thing_id]["max_queue_size"]:
                 self.queued_snapshots[thing_id]["snapshots"].pop(0)
