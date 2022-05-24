@@ -3,13 +3,10 @@
 
 import math
 import os
-
-import hjson
-
+import json
 import redis
 
 QUEUE_TIME_TO_STORE = 5
-
 
 class RedisReader:
     def __init__(self):
@@ -23,17 +20,25 @@ class RedisReader:
 
     # TODO: Test this
     def fetch_thing_data(self, thing_id):
-        if thing_id in self.queued_snapshots:
+        #if thing_id in self.queued_snapshots:
             # Read data from redis
-            stored_data_list = hjson.loads(
-                self.redis_db.get(thing_id)
-            )  # TODO: Don't think this actually works
+            stored_data_list = json.loads(
+                "[" + 
+                ",".join(
+                    map(
+                        lambda x: x.decode('utf-8'), 
+                        self.redis_db.lrange("THING_" + thing_id, 0, -1)
+                    )
+                ) + 
+                "]"
+            )
+            # print(stored_data_list)
             if len(stored_data_list) == 0:
                 return None
 
             # Append the queued data if needed
             current_data = stored_data_list
-            last_redis_timestamp = stored_data_list[:-1]["ts"]
+            last_redis_timestamp = stored_data_list[0]["ts"]
             if len(self.queued_snapshots) > 0:
                 queue_start_timestamp = self.queued_snapshots[thing_id]["snapshots"][0]["ts"]
                 queue_end_timestamp = self.queued_snapshots[thing_id]["snapshots"][-1]["ts"]
@@ -50,11 +55,9 @@ class RedisReader:
                         1000 / frequency
                     )
                     current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
-
-            print(current_data)  # FOR TESTING
             return current_data
-        else:
-            return None
+        # else:
+        #     return None
 
     def init_thing_queue(self, thing):
         if thing.thing_id not in self.queued_snapshots:

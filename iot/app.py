@@ -20,8 +20,6 @@ dispatcher = SessionDispatcher()
 Used by hardware to start a session for the hardware. Spawns a session coordinator
 that will handle incoming data from the IoT device. 
 """
-
-
 @app.route("/<string:thing_id>/start", methods=["GET"])
 def start_session(thing_id):
     key = request.headers.get("apiKey")
@@ -42,8 +40,6 @@ or requests to start/stop telemetry. Message format must be in the format
 [CODE, MESSAGE], where the code is 0-9, and the message contains no additional
 commas. 
 """
-
-
 @app.route("/real-time/<string:thing_id>/message", methods=["POST"])
 def send_message(thing_id):
     if request.is_json:
@@ -64,8 +60,6 @@ def send_message(thing_id):
 """
 TODO
 """
-
-
 @app.route("/real-time/<string:thing_id>/data", methods=["GET"])
 def fetch_real_time_thing_data(thing_id):
     try:
@@ -73,7 +67,8 @@ def fetch_real_time_thing_data(thing_id):
         if data == None:
             return "", 404
         return jsonify({"data": data, "message": "Success!"})
-    except:
+    except Exception as e:
+        print(e)
         return "", 500
 
 
