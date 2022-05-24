@@ -105,13 +105,13 @@ class SessionReceiver:
                         queued_snapshots.clear()
 
                     # Store in the long queue of the redis reader
-                    # reader.push_queue_snapshot(self.thing.thing_id, data_snapshot)
+                    reader.push_queue_snapshot(self.thing.thing_id, data_snapshot)
 
                 # Clean up the futures as they complete
                 for future in futures:
                     if future._state == "FINISHED":
                         futures.remove(future)
-            except:
+            except Exception as e:
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()

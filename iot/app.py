@@ -67,8 +67,7 @@ def fetch_real_time_thing_data(thing_id):
         if data == None:
             return "", 404
         return jsonify({"data": data, "message": "Success!"})
-    except Exception as e:
-        print(e)
+    except:
         return "", 500
 
 

@@ -44,7 +44,7 @@ class Parser:
         # Create the data snapshot and return
         data_snapshot = {"ts": timestamp}
         for i, sensor_id in enumerate(sensor_ids):
-            data_snapshot[sensor_id] = data[i]
+            data_snapshot[str(sensor_id)] = data[i]
         return data_snapshot
 
     def get_data_format(self, sensor_ids):

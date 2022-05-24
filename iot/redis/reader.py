@@ -18,9 +18,8 @@ class RedisReader:
         )
         self.queued_snapshots = {}
 
-    # TODO: Test this
     def fetch_thing_data(self, thing_id):
-        #if thing_id in self.queued_snapshots:
+        if thing_id in self.queued_snapshots:
             # Read data from redis
             stored_data_list = json.loads(
                 "[" + 
@@ -32,32 +31,31 @@ class RedisReader:
                 ) + 
                 "]"
             )
-            # print(stored_data_list)
             if len(stored_data_list) == 0:
                 return None
 
             # Append the queued data if needed
             current_data = stored_data_list
-            last_redis_timestamp = stored_data_list[0]["ts"]
-            if len(self.queued_snapshots) > 0:
-                queue_start_timestamp = self.queued_snapshots[thing_id]["snapshots"][0]["ts"]
-                queue_end_timestamp = self.queued_snapshots[thing_id]["snapshots"][-1]["ts"]
+            last_redis_timestamp = int(stored_data_list[-1]["ts"])
+            if len(self.queued_snapshots[thing_id]["snapshots"]) > 0:
+                queue_start_timestamp = int(self.queued_snapshots[thing_id]["snapshots"][0]["ts"])
+                queue_end_timestamp = int(self.queued_snapshots[thing_id]["snapshots"][-1]["ts"])
                 if last_redis_timestamp >= queue_end_timestamp:
                     pass
                 elif last_redis_timestamp <= queue_start_timestamp:
                     # We have a gap in the data
                     current_data += self.queued_snapshots[thing_id]["snapshots"]
                 else:
-                    frequency = (
-                        self.queued_snapshots[thing_id]["max_queue_size"] / QUEUE_TIME_TO_STORE
-                    )
-                    cut_index = (last_redis_timestamp - queue_start_timestamp) / math.ceil(
+                    frequency = self.queued_snapshots[thing_id]["max_queue_size"] / QUEUE_TIME_TO_STORE
+                    cut_index = math.ceil((last_redis_timestamp - queue_start_timestamp) / math.ceil(
                         1000 / frequency
-                    )
+                    ))
                     current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
+
+            # TODO: Reduce frequency of the data
             return current_data
-        # else:
-        #     return None
+        else:
+            return None
 
     def init_thing_queue(self, thing):
         if thing.thing_id not in self.queued_snapshots:
@@ -73,7 +71,7 @@ class RedisReader:
             self.queued_snapshots[thing_id]["snapshots"].append(snapshot)
             size = len(self.queued_snapshots[thing_id]["snapshots"])
             if size == self.queued_snapshots[thing_id]["max_queue_size"]:
-                self.queued_snapshots[thing_id].pop(0)
+                self.queued_snapshots[thing_id]["snapshots"].pop(0)
 
     def destory_thing_queue(self, thing_id):
         if thing_id in self.queued_snapshots:
