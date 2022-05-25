@@ -3,10 +3,8 @@
 
 import json
 import urllib.request
-
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
 from iot.redis.reader import reader
 from iot.session.dispatcher import SessionDispatcher
 
@@ -33,7 +31,6 @@ def start_session(thing_id):
     else:
         return "Could not start session.", 500
 
-
 """
 Used to transmit reliable messages to the hardware for display messages
 or requests to start/stop telemetry. Message format must be in the format 
@@ -56,7 +53,6 @@ def send_message(thing_id):
     else:
         return "", 400
 
-
 """
 TODO
 """
@@ -64,12 +60,10 @@ TODO
 def fetch_real_time_thing_data(thing_id):
     try:
         data = reader.fetch_thing_data(thing_id)
-        if data == None:
-            return "", 404
+        if data == None: return "", 404
         return jsonify({"data": data, "message": "Success!"})
     except:
         return "", 500
-
 
 # TODO: Only allow traffic from local host via node js server
 

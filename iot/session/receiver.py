@@ -16,14 +16,12 @@ BATCH_SIZE = 25  # Maximum number of elements that can be pushed to Redis at onc
 """
 UDP variable frequency data receiver from telemetry hardware. 
 """
-
-
 class SessionReceiver:
     def __init__(self, thing, close_callback):
         self.thing = thing
         self.close_callback = close_callback
         self.parser = Parser(thing)
-        self.emitter = SessionEmitter(thing.api_key, thing.thing_id, thing.get_transmission_frequency())
+        self.emitter = SessionEmitter(thing.api_key, thing.thing_id, thing.sensor_list)
         self.publisher = RedisPublisher(thing.api_key, thing.thing_id)
         self.connected = False
         self.stopping = False
@@ -36,10 +34,7 @@ class SessionReceiver:
             self.soc.settimeout(CONNECTION_TIMEOUT)
 
             # Start the listener thread
-            def loop():
-                asyncio.run(self.__read_data())
-
-            threading.Thread(target=loop).start()
+            threading.Thread(target=self.__read_data).start()
 
             # Start the emitter if the port is valid
             _, port = self.soc.getsockname()
@@ -53,11 +48,12 @@ class SessionReceiver:
         self.stopping = True
         self.soc.settimeout(0.0001)
 
-    async def __read_data(self):
+    def __read_data(self):
         # Create an event loop for writing to Redis in the background
         futures = []
         loop = asyncio.new_event_loop()
-        threading.Thread(target=loop.run_forever).start()
+        async_loop_thread = threading.Thread(target=loop.run_forever)
+        async_loop_thread.start()
 
         # For sending batches
         queued_snapshots = []
@@ -92,7 +88,7 @@ class SessionReceiver:
                     prev_snapshot = data_snapshot
 
                     # Emit data via socket.io
-                    self.emitter.emit_data(data_snapshot)
+                    self.emitter.push_data(data_snapshot)
 
                     # Store data in Redis in batches of 25
                     queued_snapshots.append(data_snapshot)
@@ -111,12 +107,12 @@ class SessionReceiver:
                 for future in futures:
                     if future._state == "FINISHED":
                         futures.remove(future)
-            except Exception as e:
-                print(e)
+            except:
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()
                 loop.call_soon_threadsafe(loop.stop)
+                async_loop_thread.join()
 
                 # Clean up objects
                 self.publisher.publish_disconnection()

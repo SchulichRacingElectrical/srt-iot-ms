@@ -1,13 +1,9 @@
 # Copyright Schulich Racing FSAE
 # Written By Abod Abbas, Justin Tijunelis
 
-# TODO: What if redis connection fails?
-
-import json
 import os
-
+import json
 import redis
-
 
 class RedisPublisher:
     def __init__(self, key, thing_id):
@@ -24,6 +20,7 @@ class RedisPublisher:
         self.redis_db.publish(
             "THING_CONNECTION", json.dumps({"active": True, "THING": self.thing_id})
         )
+        self.redis_db.delete(f"THING_{self.thing_id}")
 
     def publish_disconnection(self):
         self.redis_db.publish(
