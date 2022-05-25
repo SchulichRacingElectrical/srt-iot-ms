@@ -54,15 +54,15 @@ class SessionEmitter:
             self.stop()
 
     def push_data(self, data):
-        if self.sio != None and self.room_active:
-            if self.transmission_frequency <= int(os.getenv("MAX_STREAMING_FREQUENCY")):
+        if self.sio == None or not self.room_active: return
+        if self.transmission_frequency <= int(os.getenv("MAX_STREAMING_FREQUENCY")):
+            self.sio.emit("data", data)
+        else:
+            for key in data: self.current_datum[key] = data[key]
+            if self.emit_thread == None:
                 self.sio.emit("data", data)
-            else:
-                for key in data: self.current_datum[key] = data[key]
-                if self.emit_thread == None:
-                    self.sio.emit("data", data)
-                    self.emit_thread = threading.Thread(target=self.__emit_data)
-                    self.emit_thread.start()
+                self.emit_thread = threading.Thread(target=self.__emit_data)
+                self.emit_thread.start()
                 
     def stop(self):
         if self.sio == None: return
