@@ -112,6 +112,7 @@ class SessionReceiver:
                     if future._state == "FINISHED":
                         futures.remove(future)
             except Exception as e:
+                print(e)
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()

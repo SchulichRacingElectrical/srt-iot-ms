@@ -7,7 +7,6 @@ import json
 import redis
 
 QUEUE_TIME_TO_STORE = 5
-MAX_TRANSMISSION_FREQUENCY = 20
 
 class RedisReader:
     def __init__(self):
@@ -53,14 +52,14 @@ class RedisReader:
                     ))
                     current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
 
-            # Decimate the data to a max of MAX_TRANSMISSION_FREQUENCY Hz
-            if self.queued_snapshots[thing_id]["frequency"] > MAX_TRANSMISSION_FREQUENCY:
+            # Decimate the data to a max of MAX_STREAMING_FREQUENCY Hz
+            if self.queued_snapshots[thing_id]["frequency"] > int(os.getenv("MAX_STREAMING_FREQUENCY")):
                 decimated_data = [current_data[0]]
                 last_pushed_timestamp = decimated_data[0]["ts"]
                 for datum in current_data:
                     current_timestamp = datum["ts"]
                     time_diff = current_timestamp - last_pushed_timestamp
-                    if time_diff >= (1000 / MAX_TRANSMISSION_FREQUENCY):
+                    if time_diff >= (1000 / int(os.getenv("MAX_STREAMING_FREQUENCY"))):
                         decimated_data.append(datum)
                         last_pushed_timestamp = current_timestamp
                 current_data = decimated_data
