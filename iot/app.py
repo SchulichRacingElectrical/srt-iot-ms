@@ -62,7 +62,8 @@ def fetch_real_time_thing_data(thing_id):
         data = reader.fetch_thing_data(thing_id)
         if data == None: return "", 404
         return jsonify({"data": data, "message": "Success!"})
-    except:
+    except Exception as e:
+        print(e)
         return "", 500
 
 # TODO: Only allow traffic from local host via node js server

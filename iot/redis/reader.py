@@ -46,9 +46,8 @@ class RedisReader:
                 # We have a gap in the data
                 current_data += self.queued_snapshots[thing_id]["snapshots"]
             else:
-                frequency = self.queued_snapshots[thing_id]["max_queue_size"] / QUEUE_TIME_TO_STORE
                 cut_index = math.ceil((last_redis_timestamp - queue_start_timestamp) / math.ceil(
-                    1000 / frequency
+                    1000 / self.queued_snapshots[thing_id]["frequency"]
                 ))
                 current_data += self.queued_snapshots[thing_id]["snapshots"][cut_index:]
 
