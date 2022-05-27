@@ -18,6 +18,7 @@ class SessionEmitter:
                 self.transmission_frequency = sensor["frequency"]
         self.sio = None
         self.room_active = False
+        self.decimation_started = False
         self.current_datum = {}
 
     def start(self):
@@ -59,8 +60,8 @@ class SessionEmitter:
             self.sio.emit("data", data)
         else:
             for key in data: self.current_datum[key] = data[key]
+            if not self.decimation_started: self.sio.emit("data", data)
             if self.emit_thread == None:
-                self.sio.emit("data", data)
                 self.emit_thread = threading.Thread(target=self.__emit_data)
                 self.emit_thread.start()
                 
@@ -72,6 +73,7 @@ class SessionEmitter:
             self.emit_thread.join()
 
     def __emit_data(self):
+        self.decimation_started = True
         current_time = 0
         queued_datum = {}
         last_timestamp = -1
