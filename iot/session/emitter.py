@@ -20,6 +20,7 @@ class SessionEmitter:
         self.room_active = False
         self.decimation_started = False
         self.current_datum = {}
+        self.emit_thread = None
 
     def start(self):
         if self.sio != None: return
@@ -37,7 +38,6 @@ class SessionEmitter:
             @self.sio.on("room created")
             def on_room_created():
                 self.room_active = True
-                self.emit_thread = None
 
             @self.sio.on("room creation error")
             def on_room_creation_error():

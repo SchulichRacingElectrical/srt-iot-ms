@@ -4,3 +4,4 @@
 .vscode
 *.cpython*
 .DS_Store
+.env.docker
