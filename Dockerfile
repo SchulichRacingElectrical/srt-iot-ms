@@ -10,6 +10,5 @@ RUN pip install -r requirements.txt
 
 ENV FLASK_APP=iot/app.py
 ENV FLASK_ENV=production
-EXPOSE 5000
 
-CMD ["flask", "run"]
+CMD ["flask", "run", "-h", "0.0.0.0", "-p", "6000"]
