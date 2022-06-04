@@ -20,14 +20,15 @@ that will handle incoming data from the IoT device.
 """
 @app.route("/<string:thing_id>/start", methods=["GET"])
 def start_session(thing_id):
+    data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read())
+    print(data)
     key = request.headers.get("apiKey")
     if not key:
         return "Not authorized.", 401
     port = dispatcher.start_session(key, thing_id, request.remote_addr)
     if port > 0:
         data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read())
-        # data["ip"]
-        return jsonify({"port": port, "address": "127.0.0.1"})
+        return jsonify({"port": port, "address": data['ip']})
     else:
         return "Could not start session.", 500
 
