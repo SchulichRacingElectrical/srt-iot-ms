@@ -16,7 +16,7 @@ jobs:
         env:
           IOT_SERVICE_ENV: ${{ secrets.IOT_SERVICE_ENV }}
         run: |
-          echo "$WEB_APP_ENV" >> ./iot/.env
+          echo "$IOT_SERVICE_ENV" >> ./iot/.env
 
   deploy:
     needs: environment
@@ -35,4 +35,4 @@ jobs:
         run: |
           pm2 stop "srv-iot-ms" || true
           pm2 delete "srv-iot-ms" || true
-          pm2 start "FLASK_ENV=production FLASK_APP=iot/app.py flask run --port=6000" -n "srv-iot-ms" -f
+          pm2 start "FLASK_ENV=production FLASK_APP=iot/app.py flask run --port=6000 --host=0.0.0.0" -n "srv-iot-ms" -f
