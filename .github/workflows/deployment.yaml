@@ -20,12 +20,19 @@ jobs:
 
   deploy:
     needs: environment
-    name: Docker Container Deployment
+    name: Start PM2 Service
     runs-on: self-hosted
 
     steps:
-      - name: Deploy
+      - name: Set up Python 3.8.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8.8"
+      - name: Install dependencies
         run: |
-          sudo docker kill srv-iot-ms || true
-          sudo docker-compose build
-          sudo docker-compose up &
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Start the server
+        run: |
+          pm2 stop "srv-iot-ms" || true
+          pm2 delete "srv-iot-ms" || true
+          pm2 start "FLASK_ENV=production FLASK_APP=iot/app.py flask run --port=6000" -n "srv-iot-ms" -f
