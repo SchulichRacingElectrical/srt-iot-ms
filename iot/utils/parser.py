@@ -17,7 +17,6 @@ type_size_map = {
     "d": 8,  # double
 }
 
-
 class Parser:
     def __init__(self, sensors):
         self.sensors = sensors

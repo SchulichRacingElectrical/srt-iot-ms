@@ -1,6 +1,7 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
+import os
 import json
 import urllib.request
 from dotenv import load_dotenv
@@ -20,15 +21,13 @@ that will handle incoming data from the IoT device.
 """
 @app.route("/<string:thing_id>/start", methods=["GET"])
 def start_session(thing_id):
-    data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read())
-    print(data)
     key = request.headers.get("apiKey")
     if not key:
         return "Not authorized.", 401
     port = dispatcher.start_session(key, thing_id, request.remote_addr)
     if port > 0:
-        data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read())
-        return jsonify({"port": port, "address": data['ip']})
+        # data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read()) FUTURE, puts out an ipv6 port
+        return jsonify({"port": port, "address": os.getenv("IPV4")})
     else:
         return "Could not start session.", 500
 
