@@ -1,0 +1,31 @@
+name: IoT Service Deployment
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  environment:
+    name: Environment Config
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create .env file
+        env:
+          IOT_SERVICE_ENV: ${{ secrets.IOT_SERVICE_ENV }}
+        run: |
+          echo "$WEB_APP_ENV" >> ./iot/.env
+
+  deploy:
+    needs: environment
+    name: Docker Container Deployment
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy
+        run: |
+          sudo docker kill srv-iot-ms || true
+          sudo docker-compose build
+          sudo docker-compose up &

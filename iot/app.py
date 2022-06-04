@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from iot.redis.reader import reader
 from iot.session.dispatcher import SessionDispatcher
+from waitress import serve
 
 load_dotenv()
 
@@ -70,4 +71,4 @@ def fetch_real_time_thing_data(thing_id):
 
 # Starting the server
 if __name__ == "__main__":
-    app.run()
+    serve(app, host="0.0.0.0", port=5000)
