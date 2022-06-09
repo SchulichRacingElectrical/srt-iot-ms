@@ -11,6 +11,7 @@ from iot.session.emitter import SessionEmitter
 from iot.utils.parser import Parser
 
 CONNECTION_TIMEOUT = 10.0
+DISCONNECT_TIMEOUT = 10.0
 BATCH_SIZE = 25  # Maximum number of elements that can be pushed to Redis at once
 
 """
@@ -76,9 +77,9 @@ class SessionReceiver:
 
                 # Handle first connection
                 if not self.connected:
-                    self.publisher.publish_connection()
                     self.connected = True
-                    self.soc.settimeout(3)  # TODO: Change timeout depending on freq
+                    self.publisher.publish_connection()
+                    self.soc.settimeout(DISCONNECT_TIMEOUT)  # TODO: Change timeout depending on freq
 
                 # Parse the data into a snapshot
                 data_snapshot = self.parser.parse_telemetry_message(message)
