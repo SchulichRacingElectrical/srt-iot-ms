@@ -10,7 +10,7 @@ from iot.redis.reader import reader
 from iot.session.emitter import SessionEmitter
 from iot.utils.parser import Parser
 
-CONNECTION_TIMEOUT = 10.0
+CONNECTION_TIMEOUT = 30.0
 DISCONNECT_TIMEOUT = 10.0
 BATCH_SIZE = 25  # Maximum number of elements that can be pushed to Redis at once
 
@@ -83,6 +83,7 @@ class SessionReceiver:
 
                 # Parse the data into a snapshot
                 data_snapshot = self.parser.parse_telemetry_message(message)
+                print(data_snapshot)
 
                 # Emit and store the snapshot if valid and in order
                 if data_snapshot and prev_snapshot["ts"] < data_snapshot["ts"]:
@@ -108,7 +109,8 @@ class SessionReceiver:
                 for future in futures:
                     if future._state == "FINISHED":
                         futures.remove(future)
-            except:
+            except Exception as e:
+                print(e)
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()

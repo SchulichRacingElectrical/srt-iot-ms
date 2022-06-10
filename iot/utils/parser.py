@@ -33,13 +33,13 @@ class Parser:
 
         # Attempt to resolve the data format
         timestamp = int.from_bytes(list(message[1:4]), "little", signed=False)
-        sensor_ids = list(message[5 : 5 + sensor_count])
+        sensor_ids = list(message[5:5 + sensor_count])
         data_format = self.get_data_format(sensor_ids)
         if data_format == "":
             return None
 
         # Attempt to extract the data based on the format
-        data = struct.unpack(data_format, message[sensor_count + 5 :])
+        data = struct.unpack(data_format, message[sensor_count + 5:])
         if len(data) == 0:
             return None
 
@@ -59,16 +59,4 @@ class Parser:
             data_size = type_size_map[data_type]
             data_format += data_type
             running_count += data_size
-            if running_count % 4 != 0:
-                remaining_bytes_in_word = 4 - (running_count % 4)
-                if i == len(sensor_ids) - 1:
-                    data_format += "x" * remaining_bytes_in_word
-                    running_count += remaining_bytes_in_word
-                else:
-                    next_id = sensor_ids[i + 1]
-                    next_type = self.sensors.get_sensor_type(next_id)
-                    next_size = type_size_map[next_type]
-                    if next_size > remaining_bytes_in_word:
-                        data_format += "x" * remaining_bytes_in_word
-                        running_count += remaining_bytes_in_word
         return "<" + data_format if data_format != "" else data_format
