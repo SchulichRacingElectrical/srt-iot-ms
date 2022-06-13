@@ -10,16 +10,17 @@ DOWNLOAD_RATE = 12.5 # MBps
 
 class RedisReader:
     def __init__(self):
-        self.redis_db = redis.Redis(
+        self.queued_snapshots = {}
+
+    def fetch_thing_data(self, thing_id):
+        if thing_id not in self.queued_snapshots: return None
+
+        redis_db = redis.Redis(
             host=os.getenv("REDIS_URL"),
             port=os.getenv("REDIS_PORT"),
             username=os.getenv("REDIS_USERNAME"),
             password=os.getenv("REDIS_PASSWORD"),
         )
-        self.queued_snapshots = {}
-
-    def fetch_thing_data(self, thing_id):
-        if thing_id not in self.queued_snapshots: return None
 
         # Read data from redis
         stored_data_list = json.loads(
@@ -27,7 +28,7 @@ class RedisReader:
             ",".join(
                 map(
                     lambda x: x.decode('utf-8'), 
-                    self.redis_db.lrange("THING_" + thing_id, 0, -1)
+                    redis_db.lrange("THING_" + thing_id, 0, -1)
                 )
             ) + 
             "]"
@@ -103,7 +104,7 @@ class RedisReader:
         if thing_id in self.queued_snapshots:
             # Append the data and update the db size
             self.queued_snapshots[thing_id]["snapshots"].append(snapshot)
-            self.queued_snapshots[thing_id]["db_size"] += len(json.dumps(snapshot)) * pow(10, -6)\
+            self.queued_snapshots[thing_id]["db_size"] += len(json.dumps(snapshot)) * pow(10, -6)
             
             # Update the max queue size based on how long it will take to download the data
             download_time = self.queued_snapshots[thing_id]["db_size"] / DOWNLOAD_RATE

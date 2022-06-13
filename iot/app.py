@@ -54,7 +54,7 @@ def send_message(thing_id):
         return "", 400
 
 """
-TODO
+Fetches data that the client may be missing
 """
 @app.route("/real-time/<string:thing_id>/data", methods=["GET"])
 def fetch_real_time_thing_data(thing_id):
@@ -62,12 +62,11 @@ def fetch_real_time_thing_data(thing_id):
         data = reader.fetch_thing_data(thing_id)
         if data == None: return "", 404
         return jsonify({"data": data, "message": "Success!"})
-    except Exception as e:
-        print(e)
+    except:
         return "", 500
 
 # TODO: Only allow traffic from local host via node js server
 
 # Starting the server
 if __name__ == "__main__":
-    app.run(port=6000, host="0.0.0.0")
+    app.run()

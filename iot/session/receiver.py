@@ -78,6 +78,7 @@ class SessionReceiver:
                 # Handle first connection
                 if not self.connected:
                     self.connected = True
+                    print("Thing " + self.thing.thing_id + " started streaming!")
                     self.publisher.publish_connection()
                     self.soc.settimeout(DISCONNECT_TIMEOUT)  # TODO: Change timeout depending on freq
 
@@ -108,8 +109,7 @@ class SessionReceiver:
                 for future in futures:
                     if future._state == "FINISHED":
                         futures.remove(future)
-            except Exception as e:
-                print(e)
+            except:
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()
@@ -124,4 +124,6 @@ class SessionReceiver:
                 # Destroy the session coordinator
                 if self.close_callback:
                     self.close_callback(self.thing.thing_id)
+
+                print("Thing " + self.thing.thing_id + " stopped streaming!")
                 return

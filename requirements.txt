@@ -16,7 +16,7 @@ pyparsing==3.0.9;
 python-dotenv==0.20.0; 
 python-engineio==4.3.2; 
 python-socketio==5.6.0; 
-redis==4.3.1; 
+redis==4.3.3; 
 requests==2.27.1; 
 typing-extensions==4.2.0; 
 urllib3==1.26.9; 
