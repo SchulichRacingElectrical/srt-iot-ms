@@ -83,7 +83,6 @@ class SessionReceiver:
 
                 # Parse the data into a snapshot
                 data_snapshot = self.parser.parse_telemetry_message(message)
-                print(data_snapshot)
 
                 # Emit and store the snapshot if valid and in order
                 if data_snapshot and prev_snapshot["ts"] < data_snapshot["ts"]:
