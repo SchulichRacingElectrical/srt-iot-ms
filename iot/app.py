@@ -1,11 +1,13 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-import os
 import json
+import os
 import urllib.request
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+
 from iot.redis.reader import reader
 from iot.session.dispatcher import SessionDispatcher
 
@@ -15,12 +17,13 @@ load_dotenv()
 app = Flask(__name__)
 dispatcher = SessionDispatcher()
 
-"""
-Used by hardware to start a session for the hardware. Spawns a session coordinator
-that will handle incoming data from the IoT device. 
-"""
+
 @app.route("/<string:thing_id>/start", methods=["GET"])
 def start_session(thing_id):
+    """
+    Used by hardware to start a session for the hardware. Spawns a session coordinator
+    that will handle incoming data from the IoT device.
+    """
     key = request.headers.get("apiKey")
     if not key:
         return "Not authorized.", 401
@@ -31,14 +34,15 @@ def start_session(thing_id):
     else:
         return "Could not start session.", 500
 
-"""
-Used to transmit reliable messages to the hardware for display messages
-or requests to start/stop telemetry. Message format must be in the format 
-[CODE, MESSAGE], where the code is 0-9, and the message contains no additional
-commas. 
-"""
+
 @app.route("/real-time/<string:thing_id>/message", methods=["POST"])
 def send_message(thing_id):
+    """
+    Used to transmit reliable messages to the hardware for display messages
+    or requests to start/stop telemetry. Message format must be in the format
+    [CODE, MESSAGE], where the code is 0-9, and the message contains no additional
+    commas.
+    """
     if request.is_json:
         try:
             message = request.json["message"]
@@ -53,20 +57,28 @@ def send_message(thing_id):
     else:
         return "", 400
 
-"""
-Fetches data that the client may be missing
-"""
+
 @app.route("/real-time/<string:thing_id>/data", methods=["GET"])
 def fetch_real_time_thing_data(thing_id):
+    """
+    Fetches data that the client may be missing
+    """
     try:
         data = reader.fetch_thing_data(thing_id)
-        if data == None: return "", 404
+        if data == None:
+            return "", 404
         return jsonify({"data": data, "message": "Success!"})
     except:
         return "", 500
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return "Hello World!"
+
 
 # TODO: Only allow traffic from local host via node js server
 
 # Starting the server
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)

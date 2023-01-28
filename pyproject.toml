@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "srv-iot-ms"
+name = "iot"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
@@ -13,7 +13,7 @@ requests = "^2.27.1"
 hjson = "^3.0.2"
 waitress = "^2.1.2"
 socketio = "^0.2.1"
-python-socketio = {extras = ["client"], version = "^5.6.0"}
+python-socketio = { extras = ["client"], version = "^5.6.0" }
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"

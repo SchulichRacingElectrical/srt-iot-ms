@@ -1,0 +1,8 @@
+services:
+  srv-iot-ms:
+    build:
+      context: .
+    image: srv-iot-ms
+    container_name: srv-iot-ms
+    ports:
+      - 8001:5000
