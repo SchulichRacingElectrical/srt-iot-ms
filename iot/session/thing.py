@@ -7,21 +7,24 @@ import requests
 
 
 class SessionThing:
-    def __init__(self, api_key, thing_id):
+    def __init__(self, api_key: str, thing_id: str):
         self.api_key = api_key
         self.thing_id = thing_id
-        self.sensor_list = []
+        self.sensor_list = {}
 
     def fetch_sensors(self):
-        # TODO: Try catch?
-        url = os.getenv("GATEWAY_ROUTE") + "/api/database/sensors/thing/" + self.thing_id
+        gateway_route = os.getenv("GATEWAY_ROUTE")
+        if gateway_route is None:
+            return False
+
+        url = gateway_route + "/api/database/sensors/thing/" + self.thing_id
         headers = {"Accept": "application/json", "apiKey": self.api_key}
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            self.sensor_list = (response.json())["data"]
+            self.sensor_list = response.json()["data"]
         return response.status_code == 200
 
-    def get_sensor_type(self, small_id):
+    def get_sensor_type(self, small_id: str):
         sensors = list(filter(lambda s: s["smallId"] == small_id, self.sensor_list))
         return sensors[0]["type"] if len(sensors) != 0 else ""
 

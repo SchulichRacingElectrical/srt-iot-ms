@@ -4,21 +4,25 @@
 import asyncio
 import socket
 import threading
+from typing import Callable
 
 from iot.redis.publisher import RedisPublisher
 from iot.redis.reader import reader
 from iot.session.emitter import SessionEmitter
+from iot.session.thing import SessionThing
 from iot.utils.parser import Parser
 
 CONNECTION_TIMEOUT = 30.0
 DISCONNECT_TIMEOUT = 10.0
 BATCH_SIZE = 25  # Maximum number of elements that can be pushed to Redis at once
 
-"""
-UDP variable frequency data receiver from telemetry hardware. 
-"""
+
 class SessionReceiver:
-    def __init__(self, thing, close_callback):
+    """
+    UDP variable frequency data receiver from telemetry hardware.
+    """
+
+    def __init__(self, thing: SessionThing, close_callback: Callable):
         self.thing = thing
         self.close_callback = close_callback
         self.parser = Parser(thing)
@@ -43,7 +47,7 @@ class SessionReceiver:
                 self.emitter.start()
             return port
         except socket.error as msg:
-            return -1
+            return
 
     def stop(self):
         self.stopping = True
@@ -80,7 +84,9 @@ class SessionReceiver:
                     self.connected = True
                     print("Thing " + self.thing.thing_id + " started streaming!")
                     self.publisher.publish_connection()
-                    self.soc.settimeout(DISCONNECT_TIMEOUT)  # TODO: Change timeout depending on freq
+                    self.soc.settimeout(
+                        DISCONNECT_TIMEOUT
+                    )  # TODO: Change timeout depending on freq
 
                 # Parse the data into a snapshot
                 data_snapshot = self.parser.parse_telemetry_message(message)
@@ -126,4 +132,3 @@ class SessionReceiver:
                     self.close_callback(self.thing.thing_id)
 
                 print("Thing " + self.thing.thing_id + " stopped streaming!")
-                return

@@ -1,9 +1,7 @@
 # Copyright Schulich Racing FSAE
 # Written By Justin Tijunelis
 
-import json
 import os
-import urllib.request
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -19,7 +17,7 @@ dispatcher = SessionDispatcher()
 
 
 @app.route("/<string:thing_id>/start", methods=["GET"])
-def start_session(thing_id):
+def start_session(thing_id: str):
     """
     Used by hardware to start a session for the hardware. Spawns a session coordinator
     that will handle incoming data from the IoT device.
@@ -27,23 +25,26 @@ def start_session(thing_id):
     key = request.headers.get("apiKey")
     if not key:
         return "Not authorized.", 401
+    if not request.remote_addr:
+        return "Could not get remote address.", 500
+
     port = dispatcher.start_session(key, thing_id, request.remote_addr)
-    if port > 0:
-        # data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read()) FUTURE, puts out an ipv6 port
-        return jsonify({"port": port, "address": os.getenv("IPV4")})
-    else:
+    if port is None:
         return "Could not start session.", 500
+
+    # data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read()) FUTURE, puts out an ipv6 port
+    return jsonify({"port": port, "address": os.getenv("IPV4")})
 
 
 @app.route("/real-time/<string:thing_id>/message", methods=["POST"])
-def send_message(thing_id):
+def send_message(thing_id: str):
     """
     Used to transmit reliable messages to the hardware for display messages
     or requests to start/stop telemetry. Message format must be in the format
     [CODE, MESSAGE], where the code is 0-9, and the message contains no additional
     commas.
     """
-    if request.is_json:
+    if request.is_json and request.json:
         try:
             message = request.json["message"]
             success = dispatcher.session_coordinators[thing_id].transmitter.transmit_message(
@@ -70,11 +71,6 @@ def fetch_real_time_thing_data(thing_id):
         return jsonify({"data": data, "message": "Success!"})
     except:
         return "", 500
-
-
-@app.route("/", methods=["GET"])
-def index():
-    return "Hello World!"
 
 
 # TODO: Only allow traffic from local host via node js server
