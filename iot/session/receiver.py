@@ -6,8 +6,8 @@ import socket
 import threading
 from typing import Callable
 
-from iot.redis.publisher import RedisPublisher
-from iot.redis.reader import reader
+from iot.redis_handler.publisher import RedisPublisher
+from iot.redis_handler.reader import reader
 from iot.session.emitter import SessionEmitter
 from iot.session.thing import SessionThing
 from iot.utils.parser import Parser
@@ -35,7 +35,7 @@ class SessionReceiver:
         try:
             # Attempt to open the socket
             self.soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.soc.bind(("", 0))
+            self.soc.bind(("0.0.0.0", 0))
             self.soc.settimeout(CONNECTION_TIMEOUT)
 
             # Start the listener thread
@@ -47,9 +47,11 @@ class SessionReceiver:
                 self.emitter.start()
             return port
         except socket.error as msg:
+            print("Failed to create socket. Error Code : " + str(msg[0]) + " Message " + msg[1])
             return
 
     def stop(self):
+        print("Stopping")
         self.stopping = True
         self.soc.settimeout(0.0001)
 
@@ -69,6 +71,7 @@ class SessionReceiver:
         # To avoid sending out of order data
         prev_snapshot = {"ts": -1}
 
+        print("Started listening for data from thing " + self.thing.thing_id)
         # Read forever until something causes a stoppage
         while True:
             try:
@@ -115,7 +118,9 @@ class SessionReceiver:
                 for future in futures:
                     if future._state == "FINISHED":
                         futures.remove(future)
-            except:
+            except Exception as e:
+                print(e)
+
                 # Wait for all Redis writing to complete
                 for future in futures:
                     future.result()
@@ -132,3 +137,4 @@ class SessionReceiver:
                     self.close_callback(self.thing.thing_id)
 
                 print("Thing " + self.thing.thing_id + " stopped streaming!")
+                break

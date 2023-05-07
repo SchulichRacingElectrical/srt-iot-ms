@@ -5,3 +5,4 @@
 *.cpython*
 .DS_Store
 .env.docker
+*.pyc

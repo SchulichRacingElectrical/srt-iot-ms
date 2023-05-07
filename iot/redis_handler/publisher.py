@@ -1,9 +1,11 @@
 # Copyright Schulich Racing FSAE
 # Written By Abod Abbas, Justin Tijunelis
 
-import os
 import json
+import os
+
 import redis
+
 
 class RedisPublisher:
     def __init__(self, key, thing_id):
@@ -12,8 +14,8 @@ class RedisPublisher:
         self.redis_db = redis.Redis(
             host=os.getenv("REDIS_URL"),
             port=os.getenv("REDIS_PORT"),
-            username=os.getenv("REDIS_USERNAME"),
-            password=os.getenv("REDIS_PASSWORD"),
+            # username=os.getenv("REDIS_USERNAME"),
+            # password=os.getenv("REDIS_PASSWORD"),
         )
 
     def publish_connection(self):

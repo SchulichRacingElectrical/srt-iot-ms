@@ -8,7 +8,7 @@ type_size_map = {
     "c": 1,  # char (signed byte)
     "B": 1,  # unsigned byte
     "h": 2,  # short
-    "H": 2,  # unsigned short   
+    "H": 2,  # unsigned short
     "i": 4,  # integer
     "I": 4,  # unsigned integer
     "f": 4,  # float
@@ -16,6 +16,7 @@ type_size_map = {
     "Q": 8,  # unsigned long long
     "d": 8,  # double
 }
+
 
 class Parser:
     def __init__(self, sensors):
@@ -32,14 +33,14 @@ class Parser:
             return None
 
         # Attempt to resolve the data format
-        timestamp = int.from_bytes(list(message[1:4]), "little", signed=False)
-        sensor_ids = list(message[5:5 + sensor_count])
+        timestamp = int.from_bytes(list(message[1:5]), "little", signed=False)
+        sensor_ids = list(message[5 : 5 + sensor_count])
         data_format = self.get_data_format(sensor_ids)
         if data_format == "":
             return None
 
         # Attempt to extract the data based on the format
-        data = struct.unpack(data_format, message[sensor_count + 5:])
+        data = struct.unpack(data_format, message[sensor_count + 5 :])
         if len(data) == 0:
             return None
 

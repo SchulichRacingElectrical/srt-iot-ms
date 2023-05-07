@@ -5,8 +5,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
-from iot.redis.reader import reader
+from iot.redis_handler.reader import reader
 from iot.session.dispatcher import SessionDispatcher
 
 load_dotenv()
@@ -16,6 +15,12 @@ app = Flask(__name__)
 dispatcher = SessionDispatcher()
 
 
+@app.route("/", methods=["GET"])
+def index():
+    return os.getenv("IPV4")
+
+
+# TODO: Take last update timestamp as query parameter, and return updated sensor data from that time
 @app.route("/<string:thing_id>/start", methods=["GET"])
 def start_session(thing_id: str):
     """
@@ -33,6 +38,7 @@ def start_session(thing_id: str):
         return "Could not start session.", 500
 
     # data = json.loads(urllib.request.urlopen("http://ip.jsontest.com/").read()) FUTURE, puts out an ipv6 port
+    # TODO: Add timestamp and sensor updates
     return jsonify({"port": port, "address": os.getenv("IPV4")})
 
 
@@ -77,4 +83,4 @@ def fetch_real_time_thing_data(thing_id):
 
 # Starting the server
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8001, debug=True)
